@@ -1,0 +1,90 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', serif;
+}
+
+body{
+    height: 100vh;
+}
+
+nav.sidebar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 100%;
+    background-color: #000653;
+    padding: 40px 0;
+    box-shadow: 2px 0 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    transition: .3s;
+}
+
+nav.sidebar:hover{
+    width: 290px;
+}
+
+ul.list-nav{
+    height: 100%;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-left: 0; /* Garantir que o padding da lista esteja zero */
+}
+
+li.item-menu{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    align-self: flex-start;
+    width: 100%;
+}
+
+ul.list-nav li.item-menu a{
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    font-size: 20px;
+    padding: 20px 10px; /* Ajustar padding aqui */
+    display: flex;
+    align-items: center;
+}
+
+ul li.item-menu{
+    transition: .4s;
+}
+
+ul li.item-menu:hover{
+    background-color: #8a4110;
+}
+
+ul li.item-menu a .txt-link{
+    margin-left: 40px; /* Ajuste menor para garantir alinhamento */
+}
+
+ul li.item-menu a .icon > i{
+    font-size: 30px;
+    margin-left: 20px
+}
+
+form[name='adicionar']{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px
+}
+
+form[name='adicionar'] label input{
+    padding: 10px;
+    border: 1px solid rgba(109, 109, 109, 0.699);
+    border-radius: 5px;
+}
