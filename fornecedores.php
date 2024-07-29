@@ -174,7 +174,6 @@ $result = $stmt->get_result();
                         echo "<td>" . $row["contato_financeiro"] . "</td>";
                         echo "<td>" . $row["contato_suporte"] . "</td>";
                         echo "<td>" . $row["descricao"] . "</td>";
-                        // Other columns
                         echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalFornecedor' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
                         echo "</tr>";
                     }
