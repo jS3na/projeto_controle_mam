@@ -204,74 +204,47 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        </tbody>
-
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Endereço</th>
-                        <th>Email</th>
-                        <th>CNPJ</th>
-                        <th>Contato Comercial</th>
-                        <th>Contato Financeiro</th>
-                        <th>Contato Suporte</th>
-                        <th>Descrição</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . $row["id"] . "</td>";
-                            echo "<td>" . $row["nome"] . "</td>";
-                            echo "<td>" . $row["endereco"] . "</td>";
-                            echo "<td>" . $row["email"] . "</td>";
-                            echo "<td>" . $row["cnpj"] . "</td>";
-                            echo "<td>" . $row["contato_comercial"] . "</td>";
-                            echo "<td>" . $row["contato_financeiro"] . "</td>";
-                            echo "<td>" . $row["contato_suporte"] . "</td>";
-                            echo "<td>" . $row["descricao"] . "</td>";
-                            echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='10'>Nenhum fornecedor encontrado</td></tr>";
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Endereço</th>
+                    <th>Email</th>
+                    <th>CNPJ</th>
+                    <th>Contato Comercial</th>
+                    <th>Contato Financeiro</th>
+                    <th>Contato Suporte</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td>" . $row["id"] . "</td>";
+                        echo "<td>" . $row["nome"] . "</td>";
+                        echo "<td>" . $row["endereco"] . "</td>";
+                        echo "<td>" . $row["email"] . "</td>";
+                        echo "<td>" . $row["cnpj"] . "</td>";
+                        echo "<td>" . $row["contato_comercial"] . "</td>";
+                        echo "<td>" . $row["contato_financeiro"] . "</td>";
+                        echo "<td>" . $row["contato_suporte"] . "</td>";
+                        echo "<td>" . $row["descricao"] . "</td>";
+                        // Other columns
+                        echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalFornecedor' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
+                        echo "</tr>";
                     }
-                    $conn->close();
-                    ?>
-                </tbody>
-            </table>
-        </div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <?php if ($page > 1) : ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                    <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-                <?php if ($page < $totalPages) : ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
+                } else {
+                    echo "<tr><td colspan='10'>Nenhum fornecedor encontrado</td></tr>";
+                }
+                $conn->close();
+                ?>
+            </tbody>
+        </table>
     </div>
-
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
