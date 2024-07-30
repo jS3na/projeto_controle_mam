@@ -1,22 +1,26 @@
 <?php
-session_start();
-include("./db/config.php");
+session_start(); // Inicia a sessão para acessar variáveis de sessão
+include("./db/config.php"); // Inclui o arquivo de configuração para conexão com o banco de dados
 
-if(empty($_SESSION['logado'])){
+// Verifica se o usuário está logado; se não, redireciona para a página de login
+if (empty($_SESSION['logado'])) {
     header("Location: ./index.php");
     exit();
 }
 
+// Inicializa a variável de busca
 $search = '';
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 }
 
+// Define a página atual e calcula o offset para a paginação
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$countQuery = "SELECT COUNT(*) as total FROM fornecedores WHERE apagado = 0";
+// Consulta para contar o total de registros
+$countQuery = "SELECT COUNT(*) as total FROM contratos WHERE apagado = 0";
 if ($search) {
     $countQuery .= " AND nome LIKE ?";
 }
@@ -30,9 +34,19 @@ $countResult = $stmtCount->get_result();
 $totalRows = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalRows / $limit);
 
-$query = "SELECT * FROM fornecedores WHERE apagado = 0";
+// Consulta para buscar os contratos com paginação e filtragem
+$query = "
+SELECT c.id, f.nome AS nome_financeiro, cl.nome AS nome_cliente, fo.nome AS nome_fornecedor, 
+       c.email, c.numero_local, c.email_local, c.plano, c.sla
+FROM contratos c
+LEFT JOIN financeiro f ON c.id_financeiro = f.id
+LEFT JOIN clientes cl ON c.id_cliente = cl.id
+LEFT JOIN fornecedores fo ON c.id_fornecedor = fo.id
+WHERE c.apagado = 0
+";
+
 if ($search) {
-    $query .= " AND nome LIKE ?";
+    $query .= " AND c.nome LIKE ?";
 }
 $query .= " LIMIT ? OFFSET ?";
 
@@ -53,7 +67,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fornecedores</title>
+    <title>Contratos</title>
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -61,6 +75,7 @@ $result = $stmt->get_result();
 
 <body>
 
+    <!-- Menu de navegação lateral -->
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
@@ -75,13 +90,14 @@ $result = $stmt->get_result();
                     <span class="txt-link">Fornecedor</span>
                 </a>
             </li>
+            <!-- Exibição condicional de itens para admin -->
             <?php if ($_SESSION['admin']) : ?>
-            <li class="item-menu">
-                <a href="acesso.php">
-                    <span class="icon"><i class="bi bi-key"></i></span>
-                    <span class="txt-link">Acesso</span>
-                </a>
-            </li>
+                <li class="item-menu">
+                    <a href="acesso.php">
+                        <span class="icon"><i class="bi bi-key"></i></span>
+                        <span class="txt-link">Acesso</span>
+                    </a>
+                </li>
             <?php endif ?>
             <li class="item-menu">
                 <a href="clientes.php">
@@ -130,64 +146,98 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Fornecedores</h1>
+        <h1>Contratos</h1>
 
         <section class="topActions">
+            <!-- Botão para adicionar um contrato, visível apenas para administradores -->
             <?php if ($_SESSION['admin']) : ?>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
-                    Adicionar Fornecedor
+                    Adicionar Contrato
                 </button>
             <?php endif ?>
 
-            <form class="formPesquisa" method="GET" action="fornecedores.php">
-                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome do Fornecedor">
+            <!-- Formulário de pesquisa -->
+            <form class="formPesquisa" method="GET" action="contratos.php">
+                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome do Contrato">
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
 
+        <!-- Modal para adicionar/editar contrato -->
         <div class="modal fade" id="modalAdicionarEditar" tabindex="-1" aria-labelledby="modalAdicionarEditarLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalAdicionarEditarLabel">Adicionar Novo Fornecedor</h5>
+                        <h5 class="modal-title" id="modalAdicionarEditarLabel">Adicionar Novo Contrato</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formAdicionarEditar" method="post" action="./php/modify_fornecedor.php">
-                            <input type="hidden" name="id" id="fornecedorId">
+                        <form id="formAdicionarEditar" method="post" action="./php/modify_contrato.php">
+                            <!-- Formulário de adição/edição de contrato -->
+                            <input type="hidden" name="id" id="contratoId">
+
+                            <!-- Campos para selecionar financeiro, cliente, fornecedor e outros detalhes -->
                             <label>
                                 <i class="bi bi-person-circle"></i>
-                                <input name="nome" type="text" placeholder="Nome *" id="fornecedorNome" />
+                                <select name="id_financeiro" id="financeiroId" class="form-select">
+                                    <option value="">Selecione o Financeiro</option>
+                                    <?php
+                                    $financeiros = $conn->query("SELECT id, nome FROM financeiro");
+                                    while ($financeiro = $financeiros->fetch_assoc()) {
+                                        echo "<option value='{$financeiro['id']}'>{$financeiro['nome']}</option>";
+                                    }
+                                    ?>
+                                </select>
                             </label>
+
                             <label>
-                                <i class="bi bi-building"></i>
-                                <input name="endereco" type="text" placeholder="Endereço *" id="fornecedorEndereco" />
+                                <i class="bi bi-person-circle"></i>
+                                <select name="id_cliente" id="clienteId" class="form-select">
+                                    <option value="">Selecione o Cliente</option>
+                                    <?php
+                                    $clientes = $conn->query("SELECT id, nome FROM clientes");
+                                    while ($cliente = $clientes->fetch_assoc()) {
+                                        echo "<option value='{$cliente['id']}'>{$cliente['nome']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </label>
+
+                            <label>
+                                <i class="bi bi-person-circle"></i>
+                                <select name="id_fornecedor" id="fornecedorId" class="form-select">
+                                    <option value="">Selecione o Fornecedor</option>
+                                    <?php
+                                    $fornecedores = $conn->query("SELECT id, nome FROM fornecedores");
+                                    while ($fornecedor = $fornecedores->fetch_assoc()) {
+                                        echo "<option value='{$fornecedor['id']}'>{$fornecedor['nome']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </label>
+
+                            <label>
+                                <i class="bi bi-envelope"></i>
+                                <input name="email" type="email" placeholder="Email *" id="contratoEmail" />
                             </label>
                             <label>
                                 <i class="bi bi-envelope"></i>
-                                <input name="email" type="email" placeholder="E-Mail *" id="fornecedorEmail" />
-                            </label>
-                            <label>
-                                <i class="bi bi-postcard"></i>
-                                <input name="cnpj" type="text" placeholder="CNPJ *" id="fornecedorCnpj" />
+                                <input name="emailLocal" type="email" placeholder="Email Local*" id="contratoEmailLocal" />
                             </label>
                             <label>
                                 <i class="bi bi-telephone"></i>
-                                <input name="contato_comercial" type="text" placeholder="Contato Comercial *" id="fornecedorComercial" />
+                                <input name="numero_local" type="text" placeholder="Número Local *" id="contratoNumeroLocal" />
                             </label>
                             <label>
                                 <i class="bi bi-telephone"></i>
-                                <input name="contato_financeiro" type="text" placeholder="Contato Financeiro *" id="fornecedorFinanceiro" />
+                                <input name="plano" type="text" placeholder="Plano *" id="contratoPlano" />
                             </label>
                             <label>
-                                <i class="bi bi-telephone"></i>
-                                <input name="contato_suporte" type="text" placeholder="Contato Suporte *" id="fornecedorSuporte" />
-                            </label>
-                            <label>
-                                <i class="bi bi-card-text"></i>
-                                <input name="descricao" type="text" placeholder="Descrição *" id="fornecedorDescricao" />
+                                <i class="bi bi-stopwatch"></i>
+                                <input name="sla" type="time" placeholder="SLA *" id="contratoSla" />
                             </label>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                         <button type="submit" class="btn btn-primary" id="modalActionButton">Adicionar</button>
@@ -200,15 +250,16 @@ $result = $stmt->get_result();
             </div>
         </div>
 
+        <!-- Modal para confirmação de exclusão -->
         <div class="modal fade" id="modalApagar" tabindex="-1" aria-labelledby="modalApagarLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalApagarLabel">Você tem certeza que deseja apagar esse fornecedor?</h5>
+                        <h5 class="modal-title" id="modalApagarLabel">Você tem certeza que deseja apagar esse contrato?</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formApagar" method="post" action="./php/modify_fornecedor.php">
+                        <form id="formApagar" method="post" action="./php/modify_contrato.php">
                             <input type="hidden" name="id" id="fornecedorIdApagar">
                     </div>
                     <div class="modal-footer">
@@ -222,19 +273,21 @@ $result = $stmt->get_result();
 
         </tbody>
 
+        <!-- Tabela para exibir contratos -->
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <!-- Cabeçalhos da tabela -->
                         <th>ID</th>
-                        <th>Nome</th>
-                        <th>Endereço</th>
+                        <th>Financeiro</th>
+                        <th>Cliente</th>
+                        <th>Fornecedor</th>
                         <th>Email</th>
-                        <th>CNPJ</th>
-                        <th>Contato Comercial</th>
-                        <th>Contato Financeiro</th>
-                        <th>Contato Suporte</th>
-                        <th>Descrição</th>
+                        <th>Número Local</th>
+                        <th>Email Local</th>
+                        <th>Plano</th>
+                        <th>SLA</th>
                         <?php if ($_SESSION['admin']) : ?>
                             <th>Ações</th>
                         <?php endif ?>
@@ -242,31 +295,33 @@ $result = $stmt->get_result();
                 </thead>
                 <tbody>
                     <?php
+                    // Preenche a tabela com os dados dos contratos
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
-                            echo "<td>" . $row["nome"] . "</td>";
-                            echo "<td>" . $row["endereco"] . "</td>";
+                            echo "<td>" . $row["nome_financeiro"] . "</td>";
+                            echo "<td>" . $row["nome_cliente"] . "</td>";
+                            echo "<td>" . $row["nome_fornecedor"] . "</td>";
                             echo "<td>" . $row["email"] . "</td>";
-                            echo "<td>" . $row["cnpj"] . "</td>";
-                            echo "<td>" . $row["contato_comercial"] . "</td>";
-                            echo "<td>" . $row["contato_financeiro"] . "</td>";
-                            echo "<td>" . $row["contato_suporte"] . "</td>";
-                            echo "<td>" . $row["descricao"] . "</td>";
-                            if($_SESSION['admin']){
+                            echo "<td>" . $row["numero_local"] . "</td>";
+                            echo "<td>" . $row["email_local"] . "</td>";
+                            echo "<td>" . $row["plano"] . "</td>";
+                            echo "<td>" . $row["sla"] . "</td>";
+                            if ($_SESSION['admin']) {
                                 echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
                             }
                             echo "</tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='10'>Nenhum fornecedor encontrado</td></tr>";
+                        echo "<tr><td colspan='10'>Nenhum contrato encontrado</td></tr>";
                     }
                     $conn->close();
                     ?>
                 </tbody>
             </table>
         </div>
+        <!-- Navegação da página pulando de 5 em 5-->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <?php if ($page > 1) : ?>
@@ -297,36 +352,55 @@ $result = $stmt->get_result();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
+        // Função para configurar o estado do modal baseado na ação (adicionar ou editar)
         function setModalState(action, data = {}) {
+            // Seleciona o título do modal
             const modalTitle = document.querySelector('#modalAdicionarEditarLabel');
+            // Seleciona o botão de ação do modal (Adicionar/Salvar Alterações)
             const modalActionButton = document.querySelector('#modalActionButton');
+            // Seleciona o formulário dentro do modal
             const form = document.querySelector('#formAdicionarEditar');
+            // Seleciona o botão de remover (para excluir contratos)
             const removeButton = document.querySelector('.btn.btn-primary.remove');
 
+            // Verifica se a ação é 'adicionar'
             if (action === 'add') {
-                modalTitle.textContent = 'Adicionar Novo Fornecedor';
+                // Atualiza o título do modal para 'Adicionar Novo Contrato'
+                modalTitle.textContent = 'Adicionar Novo Contrato';
+                // Atualiza o texto do botão de ação para 'Adicionar'
                 modalActionButton.textContent = 'Adicionar';
+                // Define o nome do botão de ação como 'adicionar'
                 modalActionButton.setAttribute('name', 'adicionar');
+                // Oculta o botão de remover
                 removeButton.style.display = 'none';
-                form.action = './php/modify_fornecedor.php';
+                // Define a ação do formulário para o script PHP de modificação
+                form.action = './php/modify_contrato.php';
+                // Reseta o formulário para valores padrão
                 form.reset();
             } else if (action === 'edit') {
-                modalTitle.textContent = 'Editar Fornecedor';
+                // Atualiza o título do modal para 'Editar Contrato'
+                modalTitle.textContent = 'Editar Contrato';
+                // Atualiza o texto do botão de ação para 'Salvar Alterações'
                 modalActionButton.textContent = 'Salvar Alterações';
+                // Define o nome do botão de ação como 'editar'
                 modalActionButton.setAttribute('name', 'editar');
+                // Exibe o botão de remover
                 removeButton.style.display = 'block';
-                form.action = './php/modify_fornecedor.php';
+                // Define a ação do formulário para o script PHP de modificação
+                form.action = './php/modify_contrato.php';
 
-                document.querySelector('#fornecedorId').value = data.id;
-                document.querySelector('#fornecedorNome').value = data.nome;
-                document.querySelector('#fornecedorEndereco').value = data.endereco;
-                document.querySelector('#fornecedorEmail').value = data.email;
-                document.querySelector('#fornecedorCnpj').value = data.cnpj;
-                document.querySelector('#fornecedorComercial').value = data.contato_comercial;
-                document.querySelector('#fornecedorFinanceiro').value = data.contato_financeiro;
-                document.querySelector('#fornecedorSuporte').value = data.contato_suporte;
-                document.querySelector('#fornecedorDescricao').value = data.descricao;
+                // Preenche os campos do formulário com os dados fornecidos
+                document.querySelector('#contratoId').value = data.id;
+                document.querySelector('#financeiroId').value = data.id_financeiro;
+                document.querySelector('#clienteId').value = data.id_cliente;
+                document.querySelector('#fornecedorId').value = data.id_fornecedor;
+                document.querySelector('#contratoEmail').value = data.email;
+                document.querySelector('#contratoEmailLocal').value = data.email_local;
+                document.querySelector('#contratoNumeroLocal').value = data.numero_local;
+                document.querySelector('#contratoPlano').value = data.plano;
+                document.querySelector('#contratoSla').value = data.sla;
 
+                // Define o valor do campo oculto para apagar com o ID do contrato
                 document.querySelector('#fornecedorIdApagar').value = data.id;
             }
         }

@@ -53,7 +53,7 @@ li.item-menu{
 ul.list-nav li.item-menu a{
     color: rgb(255, 255, 255);
     text-decoration: none;
-    font-size: 20px;
+    font-size: 15px;
     padding: 20px 10px; /* Ajustar padding aqui */
     display: flex;
     align-items: center;
@@ -72,7 +72,7 @@ ul li.item-menu a .txt-link{
 }
 
 ul li.item-menu a .icon > i{
-    font-size: 30px;
+    font-size: 25px;
     margin-left: 20px
 }
 
@@ -107,14 +107,14 @@ th, td{
     font-size: 13px;
 }
 
-form[id='formFornecedor']{
+form[id='formAdicionarEditar'], form[id='formLogin']{
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px
 }
 
-form[id='formFornecedor'] label input{
+form[id='formAdicionarEditar'] label input, form[id='formLogin'] label input{
     padding: 10px;
     border: 1px solid rgba(109, 109, 109, 0.699);
     border-radius: 5px;

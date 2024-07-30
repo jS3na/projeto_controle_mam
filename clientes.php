@@ -16,7 +16,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$countQuery = "SELECT COUNT(*) as total FROM fornecedores WHERE apagado = 0";
+$countQuery = "SELECT COUNT(*) as total FROM clientes WHERE apagado = 0";
 if ($search) {
     $countQuery .= " AND nome LIKE ?";
 }
@@ -30,7 +30,7 @@ $countResult = $stmtCount->get_result();
 $totalRows = $countResult->fetch_assoc()['total'];
 $totalPages = ceil($totalRows / $limit);
 
-$query = "SELECT * FROM fornecedores WHERE apagado = 0";
+$query = "SELECT * FROM clientes WHERE apagado = 0";
 if ($search) {
     $query .= " AND nome LIKE ?";
 }
@@ -53,7 +53,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fornecedores</title>
+    <title>Clientes</title>
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -130,17 +130,17 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Fornecedores</h1>
+        <h1>Clientes</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
-                    Adicionar Fornecedor
+                    Adicionar Clientes
                 </button>
             <?php endif ?>
 
-            <form class="formPesquisa" method="GET" action="fornecedores.php">
-                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome do Fornecedor">
+            <form class="formPesquisa" method="GET" action="clientes.php">
+                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome do Cliente">
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
@@ -149,43 +149,31 @@ $result = $stmt->get_result();
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalAdicionarEditarLabel">Adicionar Novo Fornecedor</h5>
+                        <h5 class="modal-title" id="modalAdicionarEditarLabel">Adicionar Novo Cliente</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formAdicionarEditar" method="post" action="./php/modify_fornecedor.php">
-                            <input type="hidden" name="id" id="fornecedorId">
+                        <form id="formAdicionarEditar" method="post" action="./php/modify_clientes.php">
+                            <input type="hidden" name="id" id="clienteId">
                             <label>
                                 <i class="bi bi-person-circle"></i>
-                                <input name="nome" type="text" placeholder="Nome *" id="fornecedorNome" />
+                                <input name="nome" type="text" placeholder="Nome *" id="clienteNome" />
                             </label>
                             <label>
                                 <i class="bi bi-building"></i>
-                                <input name="endereco" type="text" placeholder="Endereço *" id="fornecedorEndereco" />
+                                <input name="endereco" type="text" placeholder="Endereço *" id="clienteEndereco" />
                             </label>
                             <label>
                                 <i class="bi bi-envelope"></i>
-                                <input name="email" type="email" placeholder="E-Mail *" id="fornecedorEmail" />
-                            </label>
-                            <label>
-                                <i class="bi bi-postcard"></i>
-                                <input name="cnpj" type="text" placeholder="CNPJ *" id="fornecedorCnpj" />
+                                <input name="email" type="email" placeholder="E-Mail *" id="clienteEmail" />
                             </label>
                             <label>
                                 <i class="bi bi-telephone"></i>
-                                <input name="contato_comercial" type="text" placeholder="Contato Comercial *" id="fornecedorComercial" />
-                            </label>
-                            <label>
-                                <i class="bi bi-telephone"></i>
-                                <input name="contato_financeiro" type="text" placeholder="Contato Financeiro *" id="fornecedorFinanceiro" />
-                            </label>
-                            <label>
-                                <i class="bi bi-telephone"></i>
-                                <input name="contato_suporte" type="text" placeholder="Contato Suporte *" id="fornecedorSuporte" />
+                                <input name="numero_contato" type="text" placeholder="Número de Contato *" id="clienteNumeroContato" />
                             </label>
                             <label>
                                 <i class="bi bi-card-text"></i>
-                                <input name="descricao" type="text" placeholder="Descrição *" id="fornecedorDescricao" />
+                                <input name="descricao" type="text" placeholder="Descrição *" id="clienteDescricao" />
                             </label>
                     </div>
                     <div class="modal-footer">
@@ -204,12 +192,12 @@ $result = $stmt->get_result();
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalApagarLabel">Você tem certeza que deseja apagar esse fornecedor?</h5>
+                        <h5 class="modal-title" id="modalApagarLabel">Você tem certeza que deseja apagar esse cliente?</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formApagar" method="post" action="./php/modify_fornecedor.php">
-                            <input type="hidden" name="id" id="fornecedorIdApagar">
+                        <form id="formApagar" method="post" action="./php/modify_clientes.php">
+                            <input type="hidden" name="id" id="clienteIdApagar">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -230,10 +218,7 @@ $result = $stmt->get_result();
                         <th>Nome</th>
                         <th>Endereço</th>
                         <th>Email</th>
-                        <th>CNPJ</th>
-                        <th>Contato Comercial</th>
-                        <th>Contato Financeiro</th>
-                        <th>Contato Suporte</th>
+                        <th>Número de Contato</th>
                         <th>Descrição</th>
                         <?php if ($_SESSION['admin']) : ?>
                             <th>Ações</th>
@@ -249,10 +234,7 @@ $result = $stmt->get_result();
                             echo "<td>" . $row["nome"] . "</td>";
                             echo "<td>" . $row["endereco"] . "</td>";
                             echo "<td>" . $row["email"] . "</td>";
-                            echo "<td>" . $row["cnpj"] . "</td>";
-                            echo "<td>" . $row["contato_comercial"] . "</td>";
-                            echo "<td>" . $row["contato_financeiro"] . "</td>";
-                            echo "<td>" . $row["contato_suporte"] . "</td>";
+                            echo "<td>" . $row["numero_contato"] . "</td>";
                             echo "<td>" . $row["descricao"] . "</td>";
                             if($_SESSION['admin']){
                                 echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
@@ -260,7 +242,7 @@ $result = $stmt->get_result();
                             echo "</tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='10'>Nenhum fornecedor encontrado</td></tr>";
+                        echo "<tr><td colspan='10'>Nenhum cliente encontrado</td></tr>";
                     }
                     $conn->close();
                     ?>
@@ -304,30 +286,27 @@ $result = $stmt->get_result();
             const removeButton = document.querySelector('.btn.btn-primary.remove');
 
             if (action === 'add') {
-                modalTitle.textContent = 'Adicionar Novo Fornecedor';
+                modalTitle.textContent = 'Adicionar Novo Cliente';
                 modalActionButton.textContent = 'Adicionar';
                 modalActionButton.setAttribute('name', 'adicionar');
                 removeButton.style.display = 'none';
-                form.action = './php/modify_fornecedor.php';
+                form.action = './php/modify_clientes.php';
                 form.reset();
             } else if (action === 'edit') {
-                modalTitle.textContent = 'Editar Fornecedor';
+                modalTitle.textContent = 'Editar Cliente';
                 modalActionButton.textContent = 'Salvar Alterações';
                 modalActionButton.setAttribute('name', 'editar');
                 removeButton.style.display = 'block';
-                form.action = './php/modify_fornecedor.php';
+                form.action = './php/modify_clientes.php';
 
-                document.querySelector('#fornecedorId').value = data.id;
-                document.querySelector('#fornecedorNome').value = data.nome;
-                document.querySelector('#fornecedorEndereco').value = data.endereco;
-                document.querySelector('#fornecedorEmail').value = data.email;
-                document.querySelector('#fornecedorCnpj').value = data.cnpj;
-                document.querySelector('#fornecedorComercial').value = data.contato_comercial;
-                document.querySelector('#fornecedorFinanceiro').value = data.contato_financeiro;
-                document.querySelector('#fornecedorSuporte').value = data.contato_suporte;
-                document.querySelector('#fornecedorDescricao').value = data.descricao;
+                document.querySelector('#clienteId').value = data.id;
+                document.querySelector('#clienteNome').value = data.nome;
+                document.querySelector('#clienteEndereco').value = data.endereco;
+                document.querySelector('#clienteEmail').value = data.email;
+                document.querySelector('#clienteNumeroContato').value = data.numero_contato;
+                document.querySelector('#clienteDescricao').value = data.descricao;
 
-                document.querySelector('#fornecedorIdApagar').value = data.id;
+                document.querySelector('#clienteIdApagar').value = data.id;
             }
         }
     </script>

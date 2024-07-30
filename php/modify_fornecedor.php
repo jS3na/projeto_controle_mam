@@ -2,7 +2,7 @@
 
 include("../db/config.php");
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $nome = $_POST['nome'];
     $endereco = $_POST['endereco'];
@@ -14,21 +14,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $contato_suporte = $_POST['contato_suporte'];
     $descricao = $_POST['descricao'];
 
-    if(isset($_POST['adicionar'])){
+    if (isset($_POST['adicionar'])) {
 
         $stmt = $conn->prepare("INSERT INTO fornecedores (nome, endereco, email, cnpj, contato_comercial, contato_financeiro, contato_suporte, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssssss", $nome, $endereco, $email, $cnpj, $contato_comercial, $contato_financeiro, $contato_suporte, $descricao);
-
-    }
-    elseif (isset($_POST['editar'])) {
+    } elseif (isset($_POST['editar'])) {
         $id = $_POST['id'];
         $stmt = $conn->prepare("UPDATE fornecedores SET nome=?, endereco=?, email=?, cnpj=?, contato_comercial=?, contato_financeiro=?, contato_suporte=?, descricao=? WHERE id=?");
         $stmt->bind_param("ssssssssi", $nome, $endereco, $email, $cnpj, $contato_comercial, $contato_financeiro, $contato_suporte, $descricao, $id);
-    }
-    elseif (isset($_POST['apagar'])) {
+    } elseif (isset($_POST['apagar'])) {
+        $apagado = 1;
         $id = $_POST['id'];
-        $stmt = $conn->prepare("DELETE FROM fornecedores WHERE id=?");
-        $stmt->bind_param("i", $id);
+        $stmt = $conn->prepare("UPDATE fornecedores SET apagado=? WHERE id=?");
+        $stmt->bind_param("ii", $apagado, $id);
     }
 
     if (!$stmt->execute()) {
@@ -41,10 +39,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     header("Location: ../fornecedores.php");
     exit();
-
-}else{
+} else {
     header("Location: ../fornecedores.php");
     exit();
 }
-
-?>
