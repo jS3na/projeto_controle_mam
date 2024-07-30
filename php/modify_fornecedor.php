@@ -10,11 +10,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $cnpj = $_POST['cnpj'];
     $cnpj = str_replace(array('(', ')', '-', '.', '/'), '', $cnpj);
     $contato_comercial = $_POST['contato_comercial'];
-    $contato_comercial = str_replace(array('(', ')', '-', '.'), '', $contato_comercial);
     $contato_financeiro = $_POST['contato_financeiro'];
-    $contato_financeiro = str_replace(array('(', ')', '-', '.'), '', $contato_financeiro);
     $contato_suporte = $_POST['contato_suporte'];
-    $contato_suporte = str_replace(array('(', ')', '-', '.'), '', $contato_suporte);
     $descricao = $_POST['descricao'];
 
     if(isset($_POST['adicionar'])){
@@ -27,6 +24,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $id = $_POST['id'];
         $stmt = $conn->prepare("UPDATE fornecedores SET nome=?, endereco=?, email=?, cnpj=?, contato_comercial=?, contato_financeiro=?, contato_suporte=?, descricao=? WHERE id=?");
         $stmt->bind_param("ssssssssi", $nome, $endereco, $email, $cnpj, $contato_comercial, $contato_financeiro, $contato_suporte, $descricao, $id);
+    }
+    elseif (isset($_POST['apagar'])) {
+        $id = $_POST['id'];
+        $stmt = $conn->prepare("DELETE FROM fornecedores WHERE id=?");
+        $stmt->bind_param("i", $id);
     }
 
     if (!$stmt->execute()) {

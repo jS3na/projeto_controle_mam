@@ -76,6 +76,37 @@ ul li.item-menu a .icon > i{
     margin-left: 20px
 }
 
+.container{
+    width: 80% !important;
+    max-width: 100% !important;
+}
+
+.topActions, .topActions form{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.topActions{
+    height: 5vh;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.topActions form{
+    justify-content: center;
+    gap: 10px
+}
+
+.topActions form input{
+    width: 18vw;
+    text-align: center;
+}
+
+th, td{
+    font-size: 13px;
+}
+
 form[id='formFornecedor']{
     display: flex;
     flex-direction: column;
@@ -87,4 +118,9 @@ form[id='formFornecedor'] label input{
     padding: 10px;
     border: 1px solid rgba(109, 109, 109, 0.699);
     border-radius: 5px;
+}
+
+#modalActionButton.remove {
+    background-color: red;
+    border: none;
 }
