@@ -32,7 +32,7 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="index.html">
+                <a href="inicio.php">
                     <span class="icon"><i class="bi bi-house"></i></span>
                     <span class="txt-link">Início</span>
                 </a>

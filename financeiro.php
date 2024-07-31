@@ -66,7 +66,7 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="index.html">
+                <a href="inicio.php">
                     <span class="icon"><i class="bi bi-house"></i></span>
                     <span class="txt-link">Início</span>
                 </a>
@@ -158,6 +158,10 @@ $result = $stmt->get_result();
                         <form id="formAdicionarEditar" method="post" action="./php/modify_financeiro.php">
                             <input type="hidden" name="id" id="financeiroId">
                             <label>
+                                <i class="bi bi-tag"></i>
+                                <input name="nome" type="text" placeholder="Nome *" id="financeiroNome" />
+                            </label>
+                            <label>
                                 <i class="bi bi-calendar"></i>
                                 <input name="vencimento" type="date" placeholder="Data de vencimento *" id="financeiroVencimento" required />
                             </label>
@@ -207,6 +211,7 @@ $result = $stmt->get_result();
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Nome</th>
                         <th>Vencimento</th>
                         <th>Valor</th>
                         <th>Pago</th>
@@ -219,8 +224,9 @@ $result = $stmt->get_result();
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
+                            echo $row['pago'] == '1' ? '<tr style="background-color: #9EFBAE;">' : "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
+                            echo "<td>" . $row["nome"] . "</td>";
                             echo "<td>" . $row["vencimento"] . "</td>";
                             echo "<td>" . $row["valor"] . "</td>";
                             echo $row['pago'] == '1' ? '<td> Sim </td>' : "<td> Não </td>";
@@ -288,6 +294,7 @@ $result = $stmt->get_result();
                 form.action = './php/modify_financeiro.php';
 
                 document.querySelector('#financeiroId').value = data.id;
+                document.querySelector('#financeiroNome').value = data.nome;
                 document.querySelector('#financeiroVencimento').value = data.vencimento;
                 document.querySelector('#financeiroValor').value = data.valor;
                 document.querySelector('#financeiroPago').checked = data.pago == '1'; // Verifica se data.pago é '1'

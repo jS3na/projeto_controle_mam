@@ -22,7 +22,7 @@ $offset = ($page - 1) * $limit;
 // Consulta para contar o total de registros
 $countQuery = "SELECT COUNT(*) as total FROM contratos WHERE apagado = 0";
 if ($search) {
-    $countQuery .= " AND nome LIKE ?";
+    $countQuery .= " AND email LIKE ?";
 }
 $stmtCount = $conn->prepare($countQuery);
 if ($search) {
@@ -46,7 +46,7 @@ WHERE c.apagado = 0
 ";
 
 if ($search) {
-    $query .= " AND c.nome LIKE ?";
+    $query .= " AND c.email LIKE ?";
 }
 $query .= " LIMIT ? OFFSET ?";
 
@@ -79,7 +79,7 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="index.html">
+                <a href="inicio.php">
                     <span class="icon"><i class="bi bi-house"></i></span>
                     <span class="txt-link">Início</span>
                 </a>
@@ -158,7 +158,7 @@ $result = $stmt->get_result();
 
             <!-- Formulário de pesquisa -->
             <form class="formPesquisa" method="GET" action="contratos.php">
-                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome do Contrato">
+                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo email do Contrato">
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
