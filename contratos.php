@@ -79,12 +79,6 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="inicio.php">
-                    <span class="icon"><i class="bi bi-house"></i></span>
-                    <span class="txt-link">Início</span>
-                </a>
-            </li>
-            <li class="item-menu">
                 <a href="fornecedores.php">
                     <span class="icon"><i class="bi bi-truck"></i></span>
                     <span class="txt-link">Fornecedor</span>
@@ -141,6 +135,18 @@ $result = $stmt->get_result();
                     <span class="txt-link">Perfil</span>
                 </a>
             </li>
+            <li class="item-menu">
+                <a href="reportar_bug.php">
+                    <span class="icon"><i class="bi bi-bug"></i></span>
+                    <span class="txt-link">Reportar Bug</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="logout.php">
+                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
+                    <span class="txt-link" style="color:red">Sair</span>
+                </a>
+            </li>
         </ul>
 
     </nav>
@@ -177,7 +183,7 @@ $result = $stmt->get_result();
                             <input type="hidden" name="id" id="contratoId">
 
                             <!-- Campos para selecionar financeiro, cliente, fornecedor e outros detalhes -->
-                            <label>
+                            <label id="labelFinanceiro">
                                 <i class="bi bi-person-circle"></i>
                                 <select name="id_financeiro" id="financeiroId" class="form-select">
                                     <option value="">Selecione o Financeiro</option>
@@ -190,7 +196,7 @@ $result = $stmt->get_result();
                                 </select>
                             </label>
 
-                            <label>
+                            <label id="labelCliente">
                                 <i class="bi bi-person-circle"></i>
                                 <select name="id_cliente" id="clienteId" class="form-select">
                                     <option value="">Selecione o Cliente</option>
@@ -203,7 +209,7 @@ $result = $stmt->get_result();
                                 </select>
                             </label>
 
-                            <label>
+                            <label id="labelFornecedor">
                                 <i class="bi bi-person-circle"></i>
                                 <select name="id_fornecedor" id="fornecedorId" class="form-select">
                                     <option value="">Selecione o Fornecedor</option>
@@ -222,7 +228,7 @@ $result = $stmt->get_result();
                             </label>
                             <label>
                                 <i class="bi bi-envelope"></i>
-                                <input name="emailLocal" type="email" placeholder="Email Local*" id="contratoEmailLocal" />
+                                <input name="email_local" type="email" placeholder="Email Local*" id="contratoEmailLocal" />
                             </label>
                             <label>
                                 <i class="bi bi-telephone"></i>
@@ -232,8 +238,8 @@ $result = $stmt->get_result();
                                 <i class="bi bi-telephone"></i>
                                 <input name="plano" type="text" placeholder="Plano *" id="contratoPlano" />
                             </label>
-                            <label>
-                                <i class="bi bi-stopwatch"></i>
+                            <label style="display: flex; flex-direction: row; align-items: center;">
+                                <h5 style="margin: 10px">SLA: </h5>
                                 <input name="sla" type="time" placeholder="SLA *" id="contratoSla" />
                             </label>
                     </div>
@@ -363,6 +369,10 @@ $result = $stmt->get_result();
             // Seleciona o botão de remover (para excluir contratos)
             const removeButton = document.querySelector('.btn.btn-primary.remove');
 
+            const labelFinanceiro = document.querySelector('#labelFinanceiro');
+            const labelFornecedor = document.querySelector('#labelFornecedor');
+            const labelCliente = document.querySelector('#labelCliente');
+
             // Verifica se a ação é 'adicionar'
             if (action === 'add') {
                 // Atualiza o título do modal para 'Adicionar Novo Contrato'
@@ -373,6 +383,11 @@ $result = $stmt->get_result();
                 modalActionButton.setAttribute('name', 'adicionar');
                 // Oculta o botão de remover
                 removeButton.style.display = 'none';
+
+                labelFinanceiro.style.display = 'block';
+                labelFornecedor.style.display = 'block';
+                labelCliente.style.display = 'block';
+
                 // Define a ação do formulário para o script PHP de modificação
                 form.action = './php/modify_contrato.php';
                 // Reseta o formulário para valores padrão
@@ -386,6 +401,11 @@ $result = $stmt->get_result();
                 modalActionButton.setAttribute('name', 'editar');
                 // Exibe o botão de remover
                 removeButton.style.display = 'block';
+
+                labelFinanceiro.style.display = 'none';
+                labelFornecedor.style.display = 'none';
+                labelCliente.style.display = 'none';
+
                 // Define a ação do formulário para o script PHP de modificação
                 form.action = './php/modify_contrato.php';
 

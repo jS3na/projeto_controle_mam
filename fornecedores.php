@@ -64,12 +64,6 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="inicio.php">
-                    <span class="icon"><i class="bi bi-house"></i></span>
-                    <span class="txt-link">Início</span>
-                </a>
-            </li>
-            <li class="item-menu">
                 <a href="fornecedores.php">
                     <span class="icon"><i class="bi bi-truck"></i></span>
                     <span class="txt-link">Fornecedor</span>
@@ -123,6 +117,18 @@ $result = $stmt->get_result();
                 <a href="perfil.php">
                     <span class="icon"><i class="bi bi-person"></i></span>
                     <span class="txt-link">Perfil</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="reportar_bug.php">
+                    <span class="icon"><i class="bi bi-bug"></i></span>
+                    <span class="txt-link">Reportar Bug</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="logout.php">
+                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
+                    <span class="txt-link" style="color:red">Sair</span>
                 </a>
             </li>
         </ul>

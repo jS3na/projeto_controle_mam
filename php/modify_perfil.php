@@ -2,7 +2,7 @@
 
 include("../db/config.php");
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $nome = $_POST['nome'];
     $email = $_POST['email'];
@@ -10,23 +10,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     if (isset($_POST['editar'])) {
         $id = $_POST['id'];
-        $stmt = $conn->prepare("UPDATE users SET nome=?, email=?, senha=? WHERE id=?");
-        $stmt->bind_param("sssi", $nome, $email, $senha, $id);
+        
+        if (!empty($senha)) {
+            // Criptografar a senha
+            $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("UPDATE users SET nome=?, email=?, senha=? WHERE id=?");
+            $stmt->bind_param("sssi", $nome, $email, $senhaHash, $id);
+        } else {
+            // Atualizar sem mudar a senha
+            $stmt = $conn->prepare("UPDATE users SET nome=?, email=? WHERE id=?");
+            $stmt->bind_param("ssi", $nome, $email, $id);
+        }
+
+        if (!$stmt->execute()) {
+            echo "Erro ao atualizar o usuário!";
+        }
     }
 
-    if (!$stmt->execute()) {
-        echo "deu erro";
-    }
-
-    //fechar a conexao
+    // Fechar a conexão
     $stmt->close();
     $conn->close();
 
-    header("Location: ../acesso.php");
+    header("Location: ../perfil.php");
     exit();
 
-}else{
-    header("Location: ../acesso.php");
+} else {
+    header("Location: ../perfil.php");
     exit();
 }
 

@@ -69,12 +69,6 @@ $result = $stmt->get_result();
     <nav class="sidebar">
         <ul class="list-nav">
             <li class="item-menu">
-                <a href="inicio.php">
-                    <span class="icon"><i class="bi bi-house"></i></span>
-                    <span class="txt-link">Início</span>
-                </a>
-            </li>
-            <li class="item-menu">
                 <a href="fornecedores.php">
                     <span class="icon"><i class="bi bi-truck"></i></span>
                     <span class="txt-link">Fornecedor</span>
@@ -128,6 +122,18 @@ $result = $stmt->get_result();
                     <span class="txt-link">Perfil</span>
                 </a>
             </li>
+            <li class="item-menu">
+                <a href="reportar_bug.php">
+                    <span class="icon"><i class="bi bi-bug"></i></span>
+                    <span class="txt-link">Reportar Bug</span>
+                </a>
+            </li>
+            <li class="item-menu">
+                <a href="logout.php">
+                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
+                    <span class="txt-link" style="color:red">Sair</span>
+                </a>
+            </li>
         </ul>
 
     </nav>
@@ -165,6 +171,10 @@ $result = $stmt->get_result();
                             <label>
                                 <i class="bi bi-envelope"></i>
                                 <input name="email" type="email" placeholder="E-Mail *" id="userEmail" />
+                            </label>
+                            <label id="labelSenha">
+                                <i class="bi bi-key"></i>
+                                <input name="senha" type="password" placeholder="Senha * *" id="userSenha" />
                             </label>
                             <label>
                                 <i class="bi bi-envelope"></i>
@@ -279,11 +289,14 @@ $result = $stmt->get_result();
             const form = document.querySelector('#formAdicionarEditar');
             const removeButton = document.querySelector('.btn.btn-primary.remove');
 
+            const labelSenha = document.querySelector('#labelSenha');
+
             if (action === 'add') {
                 modalTitle.textContent = 'Adicionar Novo Usuário';
                 modalActionButton.textContent = 'Adicionar';
                 modalActionButton.setAttribute('name', 'adicionar');
                 removeButton.style.display = 'none';
+                labelSenha.style.display = 'block';
                 form.action = './php/modify_user.php';
                 form.reset();
             } else if (action === 'edit') {
@@ -291,11 +304,13 @@ $result = $stmt->get_result();
                 modalActionButton.textContent = 'Salvar Alterações';
                 modalActionButton.setAttribute('name', 'editar');
                 removeButton.style.display = 'block';
+                labelSenha.style.display = 'none';
                 form.action = './php/modify_user.php';
 
                 document.querySelector('#userId').value = data.id;
                 document.querySelector('#userNome').value = data.nome;
                 document.querySelector('#userEmail').value = data.email;
+                document.querySelector('#userSenha').value = data.senha;
                 document.querySelector('#userGrupo').value = data.grupo;
 
                 document.querySelector('#userIdApagar').value = data.id;

@@ -1,14 +1,15 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Open Sans', serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
-body{
+body {
     height: 100vh;
+    background-color: #07244f;
 }
 
 nav.sidebar{
@@ -26,6 +27,7 @@ nav.sidebar{
     left: 0;
     overflow: hidden;
     transition: .3s;
+    z-index: 2;
 }
 
 nav.sidebar:hover{
@@ -111,6 +113,7 @@ form[id='formAdicionarEditar'], form[id='formLogin']{
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 20px
 }
 
@@ -124,3 +127,77 @@ form[id='formAdicionarEditar'] label input, form[id='formLogin'] label input{
     background-color: red;
     border: none;
 }
+
+.container-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #07244f;
+    flex: 1;
+}
+
+.login-form-container {
+    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    text-align: center;
+}
+
+.login-form-container form div label i{
+    color: #07244f;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.form-group i {
+    font-size: 20px;
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.alert {
+    display: block;
+}
+

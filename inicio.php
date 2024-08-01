@@ -7,6 +7,18 @@ if (empty($_SESSION['logado'])) {
     exit();
 }
 
+// Atualize a consulta SQL para contar "aprovado" e "não aprovado" por tipo
+$sql_prospeccoes = "SELECT tipo, aprovado, COUNT(*) as quantidade FROM prospeccoes GROUP BY tipo, aprovado";
+$result_prospeccoes = $conn->query($sql_prospeccoes);
+
+$data_prospeccoes = array();
+while ($row_prospeccoes = $result_prospeccoes->fetch_assoc()) {
+    $data_prospeccoes[] = $row_prospeccoes;
+}
+$json_data = json_encode($data_prospeccoes);
+
+$sql_financeiro = "SELECT valor, pago, COUNT(*) as quantidade FROM financeiro GROUP BY valor, pago";
+
 ?>
 
 <!DOCTYPE html>
@@ -15,10 +27,19 @@ if (empty($_SESSION['logado'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
+    <title>Início</title>
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 80%; /* Ajuste a largura do gráfico se necessário */
+            height: 400px; /* Ajuste a altura do gráfico se necessário */
+            z-index: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,73 +52,81 @@ if (empty($_SESSION['logado'])) {
                     <span class="txt-link">Início</span>
                 </a>
             </li>
-            <li class="item-menu">
-                <a href="fornecedores.php">
-                    <span class="icon"><i class="bi bi-truck"></i></span>
-                    <span class="txt-link">Fornecedor</span>
-                </a>
-            </li>
-            <?php if ($_SESSION['admin']) : ?>
-                <li class="item-menu">
-                    <a href="acesso.php">
-                        <span class="icon"><i class="bi bi-key"></i></span>
-                        <span class="txt-link">Acesso</span>
-                    </a>
-                </li>
-            <?php endif ?>
-            <li class="item-menu">
-                <a href="clientes.php">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Clientes</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="contratos.php">
-                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
-                    <span class="txt-link">Contratos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="financeiro.php">
-                    <span class="icon"><i class="bi bi-currency-dollar"></i></span>
-                    <span class="txt-link">Financeiro</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="prospeccao.php">
-                    <span class="icon"><i class="bi bi-search"></i></span>
-                    <span class="txt-link">Prospecção</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="chamados.php">
-                    <span class="icon"><i class="bi bi-exclamation-circle"></i></span>
-                    <span class="txt-link">Chamados</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="relatorios.php">
-                    <span class="icon"><i class="bi bi-graph-up"></i></span>
-                    <span class="txt-link">Relatórios</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="perfil.php">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="txt-link">Perfil</span>
-                </a>
-            </li>
         </ul>
-
     </nav>
 
-    <div class="container w-20 p-3">
-        <h1>Página em manutenção</h1>
+    <div class="container p-3">
+        <div class="chart-container">
+            <canvas id="graphProspeccoes"></canvas>
+        </div>
+        <script>
+            var ctx = document.getElementById('graphProspeccoes').getContext('2d');
+            var graphProspeccoes = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [], // Tipos de prospecções
+                    datasets: [
+                        {
+                            label: 'Aprovado',
+                            data: [], // Quantidades aprovadas
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Não Aprovado',
+                            data: [], // Quantidades não aprovadas
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+                        x: {
+                            ticks: {
+                                autoSkip: true,
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Preencher o gráfico com os dados do PHP
+            var data_prospeccoes = <?php echo $json_data; ?>;
+            var labels = [];
+            var approvedData = [];
+            var notApprovedData = [];
+
+            data_prospeccoes.forEach(function(item) {
+                var index = labels.indexOf(item.tipo);
+                if (index === -1) {
+                    // Novo tipo
+                    labels.push(item.tipo);
+                    approvedData.push(0);
+                    notApprovedData.push(0);
+                    index = labels.length - 1;
+                }
+                if (item.aprovado == 1) {
+                    approvedData[index] = item.quantidade;
+                } else {
+                    notApprovedData[index] = item.quantidade;
+                }
+            });
+
+            graphProspeccoes.data.labels = labels;
+            graphProspeccoes.data.datasets[0].data = approvedData;
+            graphProspeccoes.data.datasets[1].data = notApprovedData;
+            graphProspeccoes.update();
+        </script>
     </div>
 
-</body>
-
-</html>
 </body>
 
 </html>
