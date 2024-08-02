@@ -44,8 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reportar'])) {
 
         if ($mail->send()) {
             echo '<script>alert("Bug reportado com sucesso!")</script>';
-            header('Location: ./reportar_bug.php');
-            exit();
         } else {
             echo '<script>alert("Erro ao reportar bug. Tente novamente.")</script>';
         }
@@ -55,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reportar'])) {
 }
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -144,21 +142,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reportar'])) {
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Reportar Bug</h1>
+        <h1 class="title-page">Reportar Bug</h1>
 
         <form action="./reportar_bug.php" method="post">
             <div class="mb-3">
-                <label for="bug" class="form-label">Descrição do Bug:</label>
+                <label for="bug" class="form-label title-page">Descrição do Bug:</label>
                 <textarea class="form-control" id="bug" name="bug" rows="3" required></textarea>
             </div>
             <button type="submit" name="reportar" class="btn btn-primary">Reportar</button>
-            <a href="chamados.php" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

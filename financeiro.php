@@ -49,7 +49,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -139,7 +139,7 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Financeiro</h1>
+        <h1 class="title-page">Financeiro</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
@@ -231,7 +231,7 @@ $result = $stmt->get_result();
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo $row['pago'] == '1' ? '<tr style="background-color: #9EFBAE;">' : "<tr>";
+                            echo $row['pago'] == '1' ? '<tr class="ok">' : "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
                             echo "<td>" . $row["nome"] . "</td>";
                             echo "<td>" . $row["vencimento"] . "</td>";
@@ -310,6 +310,7 @@ $result = $stmt->get_result();
             }
         }
     </script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

@@ -7,9 +7,33 @@
     font-family: 'Open Sans', sans-serif;
 }
 
+.theme-light {
+    --color-primary: #eef2f2;
+    --color-secondary: #000653;
+    --color-accent: #5494cc;
+    --font-color: #000653;
+    --sidebar-font-color: white;
+    --ok-color: #9EFBAE;
+    --attention-color: #e0e059;
+}
+
+.theme-dark {
+    --color-primary: #000653;
+    --color-secondary: #57649e;
+    --color-accent: #60646b;
+    --font-color: rgb(197, 197, 197);
+    --sidebar-font-color: #000653;
+    --ok-color: #156e39;
+    --attention-color: #858531;
+}
+
 body {
     height: 100vh;
-    background-color: #07244f;
+    background: var(--color-primary) !important;
+}
+
+.title-page{
+    color: var(--font-color);
 }
 
 nav.sidebar{
@@ -19,7 +43,7 @@ nav.sidebar{
     justify-content: center;
     width: 90px;
     height: 100%;
-    background-color: #000653;
+    background-color: var(--color-secondary);
     padding: 40px 0;
     box-shadow: 2px 0 0;
     position: fixed;
@@ -40,7 +64,7 @@ ul.list-nav{
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-left: 0; /* Garantir que o padding da lista esteja zero */
+    padding-left: 0;
 }
 
 li.item-menu{
@@ -53,10 +77,10 @@ li.item-menu{
 }
 
 ul.list-nav li.item-menu a{
-    color: rgb(255, 255, 255);
+    color: var(--sidebar-font-color);
     text-decoration: none;
     font-size: 15px;
-    padding: 20px 10px; /* Ajustar padding aqui */
+    padding: 20px 10px;
     display: flex;
     align-items: center;
 }
@@ -70,12 +94,20 @@ ul li.item-menu:hover{
 }
 
 ul li.item-menu a .txt-link{
-    margin-left: 40px; /* Ajuste menor para garantir alinhamento */
+    margin-left: 40px;
 }
 
 ul li.item-menu a .icon > i{
     font-size: 25px;
     margin-left: 20px
+}
+
+.modal-content{
+    background-color: var(--color-primary) !important;
+}
+
+.modal-content h5, .modal-content div form label i{
+    color: var(--font-color);
 }
 
 .container{
@@ -107,6 +139,15 @@ ul li.item-menu a .icon > i{
 
 th, td{
     font-size: 13px;
+    color: var(--font-color);
+}
+
+.ok{
+    background-color: var(--ok-color) !important;
+}
+
+.attention{
+    background-color: var(--attention-color) !important;
 }
 
 form[id='formAdicionarEditar'], form[id='formLogin']{

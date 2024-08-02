@@ -47,7 +47,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -137,7 +137,7 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Prospeccoes</h1>
+        <h1 class="title-page">Prospeccoes</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
@@ -168,7 +168,7 @@ $result = $stmt->get_result();
                             </label>
                             <label>
                                 <i class="bi bi-speed"></i>
-                                <input name="velocidade" type="text" placeholder="Velocidade 'em Mbps*" id="prospeccaoVelocidade" />
+                                <input name="velocidade" type="text" placeholder="Velocidade em Mbps*" id="prospeccaoVelocidade" />
                             </label>
                             <label>
                                 <i class="bi bi-stopwatch"></i>
@@ -236,7 +236,7 @@ $result = $stmt->get_result();
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo $row['aprovado'] == '1' ? '<tr style="background-color: #9EFBAE;">' : "<tr>";
+                            echo $row['aprovado'] == '1' ? '<tr class="ok">' : "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
                             echo "<td>" . $row["endereco"] . "</td>";
                             echo "<td>" . $row["velocidade"] . " Mbps</td>";
@@ -317,6 +317,7 @@ $result = $stmt->get_result();
             }
         }
     </script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

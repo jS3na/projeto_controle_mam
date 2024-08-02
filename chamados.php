@@ -52,7 +52,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -142,7 +142,7 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Chamados</h1>
+        <h1 class="title-page">Chamados</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
@@ -185,7 +185,7 @@ $result = $stmt->get_result();
                             </label>
                             <label id="labelFinalizar">
                                 <input type="checkbox" name="finalizar" id="chamadoFinalizado" value="1" />
-                                <span>Finalizar</span>
+                                <span>Finalizado</span>
                             </label>
                             <label id="labelTipo">
                                 <i class="bi bi-tag"></i>
@@ -252,12 +252,12 @@ $result = $stmt->get_result();
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo $row['status'] == '1' ? '<tr style="background-color: #9EFBAE;">' : "<tr>";
+                            echo $row['status'] == '1' ? '<tr class="ok">' : "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
                             echo "<td>" . $row["data_inicio"] . "</td>";
                             echo "<td>" . $row["nome_cliente"] . "</td>";
                             echo $row['status'] == '1' ? '<td> Aberto </td>' : "<td> Fechado </td>";
-                            echo $row['prioridade'] == '1' ? '<td style="background-color: #e0e059;"> Prioridade </td>' : "<td> Não Prioridade </td>";
+                            echo $row['prioridade'] == '1' ? '<td class="attention"> Prioridade </td>' : "<td> Não Prioridade </td>";
                             echo "<td>" . $row["tipo"] . "</td>";
                             echo "<td>" . $row["data_previsao"] . "</td>";
                             echo "<td>" . $row["data_final"] . "</td>";
@@ -347,7 +347,7 @@ $result = $stmt->get_result();
                 document.querySelector('#clienteId').value = data.id_cliente;
 
                 document.querySelector('#chamadoPrioridade').checked = data.prioridade == '1'
-                document.querySelector('#chamadoFinalizado').checked = data.status == '1'
+                document.querySelector('#chamadoFinalizado').checked = data.status != '1'
 
                 document.querySelector('#chamadoTipo').value = data.tipo;
                 document.querySelector('#chamadoDataPrevisao').value = data.data_previsao;
@@ -356,6 +356,7 @@ $result = $stmt->get_result();
             }
         }
     </script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

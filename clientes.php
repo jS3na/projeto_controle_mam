@@ -47,7 +47,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -137,7 +137,7 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Clientes</h1>
+        <h1 class="title-page">Clientes</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
@@ -317,6 +317,7 @@ $result = $stmt->get_result();
             }
         }
     </script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

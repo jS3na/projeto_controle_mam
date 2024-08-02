@@ -47,7 +47,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -128,16 +128,23 @@ $result = $stmt->get_result();
             </li>
             <li class="item-menu">
                 <a href="logout.php">
-                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
+                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red !important"></i></span>
                     <span class="txt-link" style="color:red">Sair</span>
+                </a>
+            </li>
+            <li class="item-menu change-theme">
+                <a id="switch" onclick="toggleTheme()">
+                    <span class="icon"><i class="bi bi-palette"></i></span>
+                    <span class="txt-link">Mudar Tema</span>
                 </a>
             </li>
         </ul>
 
     </nav>
 
-    <div class="container w-20 p-3">
-        <h1>Fornecedores</h1>
+    <div class="container w-20 p-3">ijij
+        <h1 class="title-page">Fornecedores</h1>
+        <button id="switch" onclick="toggleTheme()">Tema</button>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
@@ -338,6 +345,7 @@ $result = $stmt->get_result();
             }
         }
     </script>
+    <script src="./src/mudar_tema.js"></script>
 </body>
 
 </html>

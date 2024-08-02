@@ -9,7 +9,7 @@ if (empty($_SESSION['logado'])) {
 
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html class="theme-light">
 <html lang="pt-BR">
 
 <head>
@@ -99,7 +99,7 @@ if (empty($_SESSION['logado'])) {
     </nav>
 
     <div class="container w-20 p-3">
-        <h1>Gerar Relatório</h1>
+        <h1 class="title-page">Gerar Relatório</h1>
         <form action="./gerarPdf/<?php echo $tableName . "_pdf"; ?>.php" method="post">
             <label>
                 <select name="relatorio" id="selectRelatorioId" class="form-select">
@@ -139,6 +139,7 @@ if (empty($_SESSION['logado'])) {
             }
         });
     </script>
+    <script src="./src/mudar_tema.js"></script>
 
 </body>
 
