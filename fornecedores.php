@@ -142,7 +142,7 @@ $result = $stmt->get_result();
 
     </nav>
 
-    <div class="container w-20 p-3">ijij
+    <div class="container w-20 p-3">
         <h1 class="title-page">Fornecedores</h1>
         <button id="switch" onclick="toggleTheme()">Tema</button>
 
