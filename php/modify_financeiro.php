@@ -2,41 +2,28 @@
 
 include("../db/config.php");
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $vencimento = $_POST['vencimento'];
     $valor = $_POST['valor'];
-    // Verifica se a checkbox está marcada; se não estiver, define como '0'
+    $nome = $_POST['nome'];
     $pago = isset($_POST['pago']) ? '1' : '0';
 
-    if(isset($_POST['adicionar'])){
-        $stmt = $conn->prepare("INSERT INTO financeiro (vencimento, valor, pago) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $vencimento, $valor, $pago);
-    }
-    elseif (isset($_POST['editar'])) {
-        $id = $_POST['id'];
-        $stmt = $conn->prepare("UPDATE financeiro SET vencimento=?, valor=?, pago=? WHERE id=?");
-        $stmt->bind_param("sssi", $vencimento, $valor, $pago, $id);
-    }
-    elseif (isset($_POST['apagar'])) {
-        $apagado = 1;
-        $id = $_POST['id'];
-        $stmt = $conn->prepare("UPDATE financeiro SET apagado=? WHERE id=?");
-        $stmt->bind_param("ii", $apagado, $id);
+    if (isset($_POST['adicionar'])) {
+        $stmt = $conn->prepare("INSERT INTO financeiro (nome, vencimento, valor, pago) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $nome, $vencimento, $valor, $pago);
+        if (!$stmt->execute()) {
+            echo "Erro ao adicionar financeiro";
+        }
+        $stmt->close();
     }
 
-    if (!$stmt->execute()) {
-        echo "deu erro";
-    }
-
-    // Fechar a conexão
-    $stmt->close();
     $conn->close();
 
-    header("Location: ../financeiro.php");
+    header("Location: ../contratos.php?show_modal=true");
     exit();
-}else{
-    header("Location: ../financeiro.php");
+} else {
+    header("Location: ../contratos.php");
     exit();
 }
 

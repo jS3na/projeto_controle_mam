@@ -64,88 +64,16 @@ $result = $stmt->get_result();
 
 <body>
 
-    <nav class="sidebar">
-        <ul class="list-nav">
-            <li class="item-menu">
-                <a href="fornecedores.php">
-                    <span class="icon"><i class="bi bi-truck"></i></span>
-                    <span class="txt-link">Fornecedor</span>
-                </a>
-            </li>
-            <?php if ($_SESSION['admin']) : ?>
-                <li class="item-menu">
-                    <a href="acesso.php">
-                        <span class="icon"><i class="bi bi-key"></i></span>
-                        <span class="txt-link">Acesso</span>
-                    </a>
-                </li>
-            <?php endif ?>
-            <li class="item-menu">
-                <a href="clientes.php">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Clientes</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="contratos.php">
-                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
-                    <span class="txt-link">Contratos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="financeiro.php">
-                    <span class="icon"><i class="bi bi-currency-dollar"></i></span>
-                    <span class="txt-link">Financeiro</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="prospeccao.php">
-                    <span class="icon"><i class="bi bi-search"></i></span>
-                    <span class="txt-link">Prospecção</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="chamados.php">
-                    <span class="icon"><i class="bi bi-exclamation-circle"></i></span>
-                    <span class="txt-link">Chamados</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="relatorios.php">
-                    <span class="icon"><i class="bi bi-graph-up"></i></span>
-                    <span class="txt-link">Relatórios</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="perfil.php">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="txt-link">Perfil</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="reportar_bug.php">
-                    <span class="icon"><i class="bi bi-bug"></i></span>
-                    <span class="txt-link">Reportar Bug</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="logout.php">
-                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
-                    <span class="txt-link" style="color:red">Sair</span>
-                </a>
-            </li>
-        </ul>
-
-    </nav>
+    <?php include './sidebar.html'; ?>
 
     <div class="container w-20 p-3">
         <h1 class="title-page">Financeiro</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
+                <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
                     Adicionar
-                </button>
+                </button>-->
             <?php endif ?>
 
             <form class="formPesquisa" method="GET" action="financeiro.php">
@@ -165,20 +93,12 @@ $result = $stmt->get_result();
                         <form id="formAdicionarEditar" method="post" action="./php/modify_financeiro.php">
                             <input type="hidden" name="id" id="financeiroId">
                             <label>
-                                <i class="bi bi-tag"></i>
-                                <input name="nome" type="text" placeholder="Nome *" id="financeiroNome" />
-                            </label>
-                            <label>
-                                <i class="bi bi-calendar"></i>
-                                <input name="vencimento" type="date" placeholder="Data de vencimento *" id="financeiroVencimento" required />
-                            </label>
-                            <label>
-                                <i class="bi bi-cash"></i>
-                                <input name="valor" type="text" placeholder="Valor *" id="financeiroValor" required />
-                            </label>
-                            <label>
                                 <input type="checkbox" name="pago" id="financeiroPago" value="1" />
                                 <span>Pago</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="pago" id="financeiroLancadoCispro" value="1" />
+                                <span>Lançado no Cispro</span>
                             </label>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -222,6 +142,7 @@ $result = $stmt->get_result();
                         <th>Vencimento</th>
                         <th>Valor</th>
                         <th>Pago</th>
+                        <th>Lançado no CISPRO</th>
                         <?php if ($_SESSION['admin']) : ?>
                             <th>Ações</th>
                         <?php endif ?>
@@ -237,8 +158,9 @@ $result = $stmt->get_result();
                             echo "<td>" . $row["vencimento"] . "</td>";
                             echo "<td>" . $row["valor"] . "</td>";
                             echo $row['pago'] == '1' ? '<td> Sim </td>' : "<td> Não </td>";
-                            if($_SESSION['admin']){
-                            echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
+                            echo $row['lancado_cispro'] == '1' ? '<td> Sim </td>' : "<td> Não </td>";
+                            if ($_SESSION['admin']) {
+                                echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
                             }
                             echo "</tr>";
                         }
@@ -301,10 +223,8 @@ $result = $stmt->get_result();
                 form.action = './php/modify_financeiro.php';
 
                 document.querySelector('#financeiroId').value = data.id;
-                document.querySelector('#financeiroNome').value = data.nome;
-                document.querySelector('#financeiroVencimento').value = data.vencimento;
-                document.querySelector('#financeiroValor').value = data.valor;
-                document.querySelector('#financeiroPago').checked = data.pago == '1'; // Verifica se data.pago é '1'
+                document.querySelector('#financeiroPago').checked = data.pago != '0'; // Ajuste conforme necessário
+                document.querySelector('#financeiroLancadoCispro').checked = data.lancado_cispro != '0'; // Ajuste conforme necessário
 
                 document.querySelector('#financeiroIdApagar').value = data.id;
             }

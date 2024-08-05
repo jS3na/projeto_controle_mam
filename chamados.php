@@ -67,86 +67,14 @@ $result = $stmt->get_result();
 
 <body>
 
-    <nav class="sidebar">
-        <ul class="list-nav">
-            <li class="item-menu">
-                <a href="fornecedores.php">
-                    <span class="icon"><i class="bi bi-truck"></i></span>
-                    <span class="txt-link">Fornecedor</span>
-                </a>
-            </li>
-            <?php if ($_SESSION['admin']) : ?>
-            <li class="item-menu">
-                <a href="acesso.php">
-                    <span class="icon"><i class="bi bi-key"></i></span>
-                    <span class="txt-link">Acesso</span>
-                </a>
-            </li>
-            <?php endif ?>
-            <li class="item-menu">
-                <a href="clientes.php">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Clientes</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="contratos.php">
-                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
-                    <span class="txt-link">Contratos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="financeiro.php">
-                    <span class="icon"><i class="bi bi-currency-dollar"></i></span>
-                    <span class="txt-link">Financeiro</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="prospeccao.php">
-                    <span class="icon"><i class="bi bi-search"></i></span>
-                    <span class="txt-link">Prospecção</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="chamados.php">
-                    <span class="icon"><i class="bi bi-exclamation-circle"></i></span>
-                    <span class="txt-link">Chamados</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="relatorios.php">
-                    <span class="icon"><i class="bi bi-graph-up"></i></span>
-                    <span class="txt-link">Relatórios</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="perfil.php">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="txt-link">Perfil</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="reportar_bug.php">
-                    <span class="icon"><i class="bi bi-bug"></i></span>
-                    <span class="txt-link">Reportar Bug</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="logout.php">
-                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
-                    <span class="txt-link" style="color:red">Sair</span>
-                </a>
-            </li>
-        </ul>
-
-    </nav>
+    <?php include './sidebar.html'; ?>
 
     <div class="container w-20 p-3">
         <h1 class="title-page">Chamados</h1>
 
         <section class="topActions">
             <?php if ($_SESSION['admin']) : ?>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar"">
                     Abrir Chamado
                 </button>
             <?php endif ?>
@@ -156,6 +84,8 @@ $result = $stmt->get_result();
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
+
+    
 
         <div class="modal fade" id="modalAdicionarEditar" tabindex="-1" aria-labelledby="modalAdicionarEditarLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -167,7 +97,7 @@ $result = $stmt->get_result();
                     <div class="modal-body">
                         <form id="formAdicionarEditar" method="post" action="./php/modify_chamado.php">
                             <input type="hidden" name="id" id="chamadoId">
-                            <label id="labelCliente">
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-person-circle"></i>
                                 <select name="id_cliente" id="clienteId" class="form-select">
                                     <option value="">Selecione o Cliente</option>
@@ -183,15 +113,19 @@ $result = $stmt->get_result();
                                 <input type="checkbox" name="prioridade" id="chamadoPrioridade" value="1" />
                                 <span>Prioridade</span>
                             </label>
-                            <label id="labelFinalizar">
-                                <input type="checkbox" name="finalizar" id="chamadoFinalizado" value="1" />
-                                <span>Finalizado</span>
+                            <label>
+                                <span>Status</span>
+                                <select name="status" id="chamadoStatus">
+                                    <option value="0">Aberto</option>
+                                    <option value="1">Agendado</option>
+                                    <option value="2">Fechado</option>
+                                </select>
                             </label>
-                            <label id="labelTipo">
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-tag"></i>
                                 <input name="tipo" type="text" placeholder="Tipo *" id="chamadoTipo" />
                             </label>
-                            <label id="labelDataPrevisao">
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-stopwatch"></i>
                                 <span>Data de previsão</span>
                                 <input name="data_previsao" type="datetime-local" placeholder="Data de previsão *" id="chamadoDataPrevisao" />
@@ -256,7 +190,20 @@ $result = $stmt->get_result();
                             echo "<td>" . $row["id"] . "</td>";
                             echo "<td>" . $row["data_inicio"] . "</td>";
                             echo "<td>" . $row["nome_cliente"] . "</td>";
-                            echo $row['status'] == '1' ? '<td> Aberto </td>' : "<td> Fechado </td>";
+                            switch ($row['status']) {
+                                case '0':
+                                    echo '<td> Aberto </td>';
+                                    break;
+                                case '1':
+                                    echo '<td> Agendado </td>';
+                                    break;
+                                case '2':
+                                    echo '<td> Fechado </td>';
+                                    break;
+                                default:
+                                    echo '<td> Desconhecido </td>';
+                                    break;
+                            }
                             echo $row['prioridade'] == '1' ? '<td class="attention"> Prioridade </td>' : "<td> Não Prioridade </td>";
                             echo "<td>" . $row["tipo"] . "</td>";
                             echo "<td>" . $row["data_previsao"] . "</td>";
@@ -310,12 +257,7 @@ $result = $stmt->get_result();
             const form = document.querySelector('#formAdicionarEditar');
             const removeButton = document.querySelector('.btn.btn-primary.remove');
 
-            const finalizarButton = document.querySelector('#labelFinalizar');
-            const tipoButton = document.querySelector('#labelTipo');
-            const dataPrevisaoButton = document.querySelector('#labelDataPrevisao');
-            const clienteButton = document.querySelector('#labelCliente');
-
-
+            const sumirNoEditar = document.querySelectorAll('.sumirNoEditar');
 
             if (action === 'add') {
                 modalTitle.textContent = 'Abrir Novo Chamado';
@@ -323,10 +265,9 @@ $result = $stmt->get_result();
                 modalActionButton.setAttribute('name', 'adicionar');
 
                 removeButton.style.display = 'none';
-                finalizarButton.style.display = 'none';
-                tipoButton.style.display = 'block';
-                dataPrevisaoButton.style.display = 'block';
-                clienteButton.style.display = 'block';
+                sumirNoEditar.forEach(element => {
+                    element.style.display = 'block';
+                });
 
                 form.action = './php/modify_chamado.php';
                 form.reset();
@@ -336,21 +277,16 @@ $result = $stmt->get_result();
                 modalActionButton.setAttribute('name', 'editar');
 
                 removeButton.style.display = 'block';
-                finalizarButton.style.display = 'block';
-                tipoButton.style.display = 'none';
-                dataPrevisaoButton.style.display = 'none';
-                clienteButton.style.display = 'none';
+                sumirNoEditar.forEach(element => {
+                    element.style.display = 'none';
+                });
 
                 form.action = './php/modify_chamado.php';
 
                 document.querySelector('#chamadoId').value = data.id;
                 document.querySelector('#clienteId').value = data.id_cliente;
-
+                document.querySelector('#chamadoStatus').value = data.status;
                 document.querySelector('#chamadoPrioridade').checked = data.prioridade == '1'
-                document.querySelector('#chamadoFinalizado').checked = data.status != '1'
-
-                document.querySelector('#chamadoTipo').value = data.tipo;
-                document.querySelector('#chamadoDataPrevisao').value = data.data_previsao;
 
                 document.querySelector('#chamadoIdApagar').value = data.id;
             }

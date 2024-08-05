@@ -9,16 +9,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tipo = $_POST['tipo'];
     $data_previsao = $_POST['data_previsao'];
     $data_previsao = str_replace('T', ' ', $data_previsao) . ':00';
+    $status = $_POST['status'];
 
     if (isset($_POST['adicionar'])) {
         $data_inicio = date('Y-m-d H:i:s');
-        $status = 1;
 
         $stmt = $conn->prepare("INSERT INTO chamados (data_inicio, id_cliente, status, prioridade, tipo, data_previsao) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("siisss", $data_inicio, $id_cliente, $status, $prioridade, $tipo, $data_previsao);
     } elseif (isset($_POST['editar'])) {
         $data_final = date('Y-m-d H:i:s');
-        $status = 0;
         $id = $_POST['id'];
 
         $stmt = $conn->prepare("UPDATE chamados SET prioridade=?, status=?, data_final=? WHERE id=?");
@@ -38,11 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Exiba a mensagem de erro
         echo "Erro ao executar a declaração preparada: " . $errorInfo;
     }
-
+    else{
+        header("Location: ../chamados.php");
+        exit();
+    }
 
     // Fechar a conexão
     $stmt->close();
     $conn->close();
+
 } else {
     header("Location: ../chamados.php");
     exit();

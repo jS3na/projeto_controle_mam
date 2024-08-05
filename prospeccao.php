@@ -2,7 +2,7 @@
 session_start();
 include("./db/config.php");
 
-if(empty($_SESSION['logado'])){
+if (empty($_SESSION['logado'])) {
     header("Location: ./index.php");
     exit();
 }
@@ -62,79 +62,7 @@ $result = $stmt->get_result();
 
 <body>
 
-    <nav class="sidebar">
-        <ul class="list-nav">
-            <li class="item-menu">
-                <a href="fornecedores.php">
-                    <span class="icon"><i class="bi bi-truck"></i></span>
-                    <span class="txt-link">Fornecedor</span>
-                </a>
-            </li>
-            <?php if ($_SESSION['admin']) : ?>
-            <li class="item-menu">
-                <a href="acesso.php">
-                    <span class="icon"><i class="bi bi-key"></i></span>
-                    <span class="txt-link">Acesso</span>
-                </a>
-            </li>
-            <?php endif ?>
-            <li class="item-menu">
-                <a href="clientes.php">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Clientes</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="contratos.php">
-                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
-                    <span class="txt-link">Contratos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="financeiro.php">
-                    <span class="icon"><i class="bi bi-currency-dollar"></i></span>
-                    <span class="txt-link">Financeiro</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="prospeccao.php">
-                    <span class="icon"><i class="bi bi-search"></i></span>
-                    <span class="txt-link">Prospecção</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="chamados.php">
-                    <span class="icon"><i class="bi bi-exclamation-circle"></i></span>
-                    <span class="txt-link">Chamados</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="relatorios.php">
-                    <span class="icon"><i class="bi bi-graph-up"></i></span>
-                    <span class="txt-link">Relatórios</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="perfil.php">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="txt-link">Perfil</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="reportar_bug.php">
-                    <span class="icon"><i class="bi bi-bug"></i></span>
-                    <span class="txt-link">Reportar Bug</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="logout.php">
-                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
-                    <span class="txt-link" style="color:red">Sair</span>
-                </a>
-            </li>
-        </ul>
-
-    </nav>
+    <?php include './sidebar.html'; ?>
 
     <div class="container w-20 p-3">
         <h1 class="title-page">Prospeccoes</h1>
@@ -162,25 +90,40 @@ $result = $stmt->get_result();
                     <div class="modal-body">
                         <form id="formAdicionarEditar" method="post" action="./php/modify_prospeccao.php">
                             <input type="hidden" name="id" id="prospeccaoId">
-                            <label>
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-building"></i>
                                 <input name="endereco" type="text" placeholder="Endereço *" id="prospeccaoEndereco" />
                             </label>
-                            <label>
+                            <label class="sumirNoEditar">
+                                <i class="bi bi-compass"></i>
+                                <input name="latitude" type="text" placeholder="Latitude *" id="prospeccaoLatitude" />
+                            </label>
+                            <label class="sumirNoEditar">
+                                <i class="bi bi-compass"></i>
+                                <input name="longitude" type="text" placeholder="Longitude *" id="prospeccaoLongitude" />
+                            </label>
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-speed"></i>
                                 <input name="velocidade" type="text" placeholder="Velocidade em Mbps*" id="prospeccaoVelocidade" />
                             </label>
-                            <label>
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-stopwatch"></i>
                                 <input name="sla" type="time" placeholder="SLA *" id="prospeccaoSla" />
                             </label>
-                            <label>
+                            <label class="sumirNoEditar">
                                 <i class="bi bi-cable"></i>
                                 <input name="tipo" type="text" placeholder="Tipo *" id="prospeccaoTipo" />
                             </label>
                             <label>
-                                <input type="checkbox" name="aprovado" id="prospeccaoAprovado" value="1"/>
-                                <span>Aprovado</span>
+                                <span>Status</span>
+                                <select name="status" id="prospeccaoStatus">
+                                    <option value="0">Novo</option>
+                                    <option value="1">Em Análise</option>
+                                    <option value="2">Aguardando Aprovação</option>
+                                    <option value="3">Aprovado</option>
+                                    <option value="4">Em Negociação</option>
+                                    <option value="5">Contratado</option>
+                                </select>
                             </label>
                     </div>
                     <div class="modal-footer">
@@ -215,18 +158,18 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        </tbody>
-
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Endereço</th>
+                        <th>Coordenada</th>
                         <th>Velocidade</th>
                         <th>SLA</th>
                         <th>Tipo</th>
-                        <th>Aprovado</th>
+                        <th>Status</th>
+                        <th>Última modificação</th>
                         <?php if ($_SESSION['admin']) : ?>
                             <th>Ações</th>
                         <?php endif ?>
@@ -236,51 +179,66 @@ $result = $stmt->get_result();
                     <?php
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo $row['aprovado'] == '1' ? '<tr class="ok">' : "<tr>";
+                            echo $row['status'] == '1' ? '<tr class="ok">' : "<tr>";
                             echo "<td>" . $row["id"] . "</td>";
                             echo "<td>" . $row["endereco"] . "</td>";
+                            echo "<td>" . $row["coordenada"] . "</td>";
                             echo "<td>" . $row["velocidade"] . " Mbps</td>";
                             echo "<td>" . $row["sla"] . "</td>";
                             echo "<td>" . $row["tipo"] . "</td>";
-                            echo $row['aprovado'] == '1' ? '<td> Sim </td>' : "<td> Não </td>";
+                            switch ($row['status']) {
+                                case '0':
+                                    echo '<td> Novo </td>';
+                                    break;
+                                case '1':
+                                    echo '<td> Em Análise </td>';
+                                    break;
+                                case '2':
+                                    echo '<td> Aguardando Aprovação </td>';
+                                    break;
+                                case '3':
+                                    echo '<td> Aprovado </td>';
+                                    break;
+                                case '4':
+                                    echo '<td> Em Negociação </td>';
+                                    break;
+                                case '5':
+                                    echo '<td> Contratado </td>';
+                                    break;
+                                default:
+                                    echo '<td> Desconhecido </td>';
+                                    break;
+                            }
+                            echo "<td>" . $row["ultima_modificacao"] . "</td>";
+
                             if($_SESSION['admin']){
                                 echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modalAdicionarEditar' onclick='setModalState(\"edit\", " . json_encode($row) . ")'>Editar</button></td>";
                             }
                             echo "</tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='10'>Nenhuma prospeccao encontrada</td></tr>";
+                        echo "<tr><td colspan='7'>Nenhuma prospecção encontrada</td></tr>";
                     }
-                    $conn->close();
                     ?>
                 </tbody>
             </table>
         </div>
-        <nav aria-label="Page navigation">
+
+        <nav aria-label="Navegação de página exemplo">
             <ul class="pagination justify-content-center">
-                <?php if ($page > 1) : ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= $search ?>" tabindex="-1">Anterior</a>
+                </li>
                 <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                    <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>"><?php echo $i; ?></a>
-                    </li>
+                    <li class="page-item <?= ($page == $i) ? 'active' : '' ?>"><a class="page-link" href="?page=<?= $i ?>&search=<?= $search ?>"><?= $i ?></a></li>
                 <?php endfor; ?>
-                <?php if ($page < $totalPages) : ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                <?php endif; ?>
+                <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= $search ?>">Próximo</a>
+                </li>
             </ul>
         </nav>
-    </div>
 
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
@@ -291,27 +249,34 @@ $result = $stmt->get_result();
             const modalActionButton = document.querySelector('#modalActionButton');
             const form = document.querySelector('#formAdicionarEditar');
             const removeButton = document.querySelector('.btn.btn-primary.remove');
+            const sumirNoEditar = document.querySelectorAll('.sumirNoEditar');
+
+            document.querySelector('#prospeccaoId').value = data.id;
 
             if (action === 'add') {
                 modalTitle.textContent = 'Adicionar Nova Prospeccao';
                 modalActionButton.textContent = 'Adicionar';
                 modalActionButton.setAttribute('name', 'adicionar');
+
                 removeButton.style.display = 'none';
+                sumirNoEditar.forEach(element => {
+                    element.style.display = 'block';
+                });
+
                 form.action = './php/modify_prospeccao.php';
                 form.reset();
             } else if (action === 'edit') {
                 modalTitle.textContent = 'Editar Prospeccao';
                 modalActionButton.textContent = 'Salvar Alterações';
                 modalActionButton.setAttribute('name', 'editar');
-                removeButton.style.display = 'block';
-                form.action = './php/modify_prospeccao.php';
 
-                document.querySelector('#prospeccaoId').value = data.id;
-                document.querySelector('#prospeccaoEndereco').value = data.endereco;
-                document.querySelector('#prospeccaoVelocidade').value = data.velocidade;
-                document.querySelector('#prospeccaoSla').value = data.sla;
-                document.querySelector('#prospeccaoTipo').value = data.tipo;
-                document.querySelector('#prospeccaoAprovado').checked = data.aprovado == '1';
+                removeButton.style.display = 'block';
+                sumirNoEditar.forEach(element => {
+                    element.style.display = 'none';
+                });
+
+                form.action = './php/modify_prospeccao.php';
+                document.querySelector('#prospeccaoStatus').value = data.status;
 
                 document.querySelector('#prospeccaoIdApagar').value = data.id;
             }

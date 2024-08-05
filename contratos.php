@@ -76,81 +76,7 @@ $result = $stmt->get_result();
 
 <body>
 
-    <!-- Menu de navegação lateral -->
-    <nav class="sidebar">
-        <ul class="list-nav">
-            <li class="item-menu">
-                <a href="fornecedores.php">
-                    <span class="icon"><i class="bi bi-truck"></i></span>
-                    <span class="txt-link">Fornecedor</span>
-                </a>
-            </li>
-            <!-- Exibição condicional de itens para admin -->
-            <?php if ($_SESSION['admin']) : ?>
-                <li class="item-menu">
-                    <a href="acesso.php">
-                        <span class="icon"><i class="bi bi-key"></i></span>
-                        <span class="txt-link">Acesso</span>
-                    </a>
-                </li>
-            <?php endif ?>
-            <li class="item-menu">
-                <a href="clientes.php">
-                    <span class="icon"><i class="bi bi-people-fill"></i></span>
-                    <span class="txt-link">Clientes</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="contratos.php">
-                    <span class="icon"><i class="bi bi-file-earmark-text"></i></span>
-                    <span class="txt-link">Contratos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="financeiro.php">
-                    <span class="icon"><i class="bi bi-currency-dollar"></i></span>
-                    <span class="txt-link">Financeiro</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="prospeccao.php">
-                    <span class="icon"><i class="bi bi-search"></i></span>
-                    <span class="txt-link">Prospecção</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="chamados.php">
-                    <span class="icon"><i class="bi bi-exclamation-circle"></i></span>
-                    <span class="txt-link">Chamados</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="relatorios.php">
-                    <span class="icon"><i class="bi bi-graph-up"></i></span>
-                    <span class="txt-link">Relatórios</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="perfil.php">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="txt-link">Perfil</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="reportar_bug.php">
-                    <span class="icon"><i class="bi bi-bug"></i></span>
-                    <span class="txt-link">Reportar Bug</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="logout.php">
-                    <span class="icon"><i class="bi bi-box-arrow-left" style="color:red"></i></span>
-                    <span class="txt-link" style="color:red">Sair</span>
-                </a>
-            </li>
-        </ul>
-
-    </nav>
+    <?php include './sidebar.html'; ?>
 
     <div class="container w-20 p-3">
         <h1 class="title-page">Contratos</h1>
@@ -158,7 +84,7 @@ $result = $stmt->get_result();
         <section class="topActions">
             <!-- Botão para adicionar um contrato, visível apenas para administradores -->
             <?php if ($_SESSION['admin']) : ?>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarEditar" onclick="setModalState('add')">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdicionarFinanceiro">
                     Adicionar Contrato
                 </button>
             <?php endif ?>
@@ -169,6 +95,42 @@ $result = $stmt->get_result();
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
+
+        <div class="modal fade" id="modalAdicionarFinanceiro" tabindex="-1" aria-labelledby="modalAdicionarFinanceiroLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAdicionarFinanceiroLabel">Primeiro, adicione um financeiro para vincular ao contrato</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formAdicionarEditar" method="post" action="./php/modify_financeiro.php">
+                            <input type="hidden" name="id" id="chamadoId">
+                            <label>
+                                <i class="bi bi-tag"></i>
+                                <input name="nome" type="text" placeholder="Nome *" id="financeiroNome" />
+                            </label>
+                            <label>
+                                <i class="bi bi-calendar"></i>
+                                <input name="vencimento" type="date" placeholder="Data de vencimento *" id="financeiroVencimento" />
+                            </label>
+                            <label>
+                                <i class="bi bi-cash"></i>
+                                <input name="valor" type="text" placeholder="Valor *" id="financeiroValor" />
+                            </label>
+                            <label>
+                                <input type="checkbox" name="pago" id="financeiroPago" value="1" />
+                                <span>Pago</span>
+                            </label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary" name="adicionar">Adicionar</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <!-- Modal para adicionar/editar contrato -->
         <div class="modal fade" id="modalAdicionarEditar" tabindex="-1" aria-labelledby="modalAdicionarEditarLabel" aria-hidden="true">
@@ -359,7 +321,12 @@ $result = $stmt->get_result();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-        // Função para configurar o estado do modal baseado na ação (adicionar ou editar)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('show_modal')) {
+            const modalAdicionarEditar = new bootstrap.Modal(document.getElementById('modalAdicionarEditar'));
+            modalAdicionarEditar.show();
+            setModalState('add');
+        }
         function setModalState(action, data = {}) {
             // Seleciona o título do modal
             const modalTitle = document.querySelector('#modalAdicionarEditarLabel');

@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
     $data_hoje = date('Y-m-d');
 
-    $sql = "SELECT nome, endereco, email, cnpj, contato_comercial, contato_financeiro, contato_suporte, descricao FROM fornecedores WHERE apagado = 0";
+    $sql = "SELECT nome, endereco, email, cnpj,telefone_comercial,telefone_financeiro,telefone_suporte, descricao FROM fornecedores WHERE apagado = 0";
 
     $result = $conn->query($sql);
 
@@ -33,9 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
             $pdf->Cell(50, 25, mb_convert_encoding($row['endereco'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
             $pdf->Cell(35, 25, mb_convert_encoding($row['email'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
             $pdf->Cell(25, 25, mb_convert_encoding($row['cnpj'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['contato_comercial'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['contato_financeiro'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['contato_suporte'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
+            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_comercial'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
+            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_financeiro'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
+            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_suporte'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
             $pdf->Cell(50, 25, mb_convert_encoding($row['descricao'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
 
             $pdf->Ln();
