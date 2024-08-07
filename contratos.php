@@ -120,7 +120,7 @@ $result = $stmt->get_result();
                             </label>
                             <label>
                                 <input type="checkbox" name="pago" id="financeiroPago" value="1" />
-                                <span>Pago</span>
+                                <span class="txtModal">Pago</span>
                             </label>
                     </div>
                     <div class="modal-footer">

@@ -129,12 +129,26 @@ ul li.item-menu a .icon > i{
 
 .topActions form{
     justify-content: center;
+    align-items: center;
     gap: 10px
 }
 
 .topActions form input{
     width: 18vw;
     text-align: center;
+    align-self: center;
+}
+
+.topActions form .input-pesquisa{
+    margin: 0 !important;
+}
+
+.topActions .filtros{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px
 }
 
 th, td{
@@ -146,8 +160,16 @@ th, td{
     background-color: var(--ok-color) !important;
 }
 
+.nome_fornecedor{
+    cursor: pointer;
+}
+
 .attention{
     background-color: var(--attention-color) !important;
+}
+
+.txtModal{
+    color: var(--font-color)
 }
 
 form[id='formAdicionarEditar'], form[id='formLogin']{

@@ -19,7 +19,7 @@ $offset = ($page - 1) * $limit;
 // Contar total de registros com ou sem filtro
 $countQuery = "SELECT COUNT(*) as total FROM financeiro WHERE apagado = 0";
 if ($search) {
-    $countQuery .= " AND valor LIKE ?";
+    $countQuery .= " AND nome LIKE ?";
 }
 $stmtCount = $conn->prepare($countQuery);
 if ($search) {
@@ -34,7 +34,7 @@ $totalPages = ceil($totalRows / $limit);
 // Consulta para selecionar registros com ou sem filtro
 $query = "SELECT * FROM financeiro WHERE apagado = 0";
 if ($search) {
-    $query .= " AND valor LIKE ?";
+    $query .= " AND nome LIKE ?";
 }
 $query .= " LIMIT ? OFFSET ?";
 
@@ -77,7 +77,7 @@ $result = $stmt->get_result();
             <?php endif ?>
 
             <form class="formPesquisa" method="GET" action="financeiro.php">
-                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo valor" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" class="form-control" id="search" name="search" placeholder="Pesquise pelo nome" value="<?php echo htmlspecialchars($search); ?>">
                 <button type="submit" class="btn btn-primary">Pesquisar</button>
             </form>
         </section>
@@ -97,7 +97,7 @@ $result = $stmt->get_result();
                                 <span>Pago</span>
                             </label>
                             <label>
-                                <input type="checkbox" name="pago" id="financeiroLancadoCispro" value="1" />
+                                <input type="checkbox" name="lancado_cispro" id="financeiroLancadoCispro" value="1" />
                                 <span>Lançado no Cispro</span>
                             </label>
                             <div class="modal-footer">
@@ -223,8 +223,8 @@ $result = $stmt->get_result();
                 form.action = './php/modify_financeiro.php';
 
                 document.querySelector('#financeiroId').value = data.id;
-                document.querySelector('#financeiroPago').checked = data.pago != '0'; // Ajuste conforme necessário
-                document.querySelector('#financeiroLancadoCispro').checked = data.lancado_cispro != '0'; // Ajuste conforme necessário
+                document.querySelector('#financeiroPago').checked = data.pago != '0';
+                document.querySelector('#financeiroLancadoCispro').checked = data.lancado_cispro != '0';
 
                 document.querySelector('#financeiroIdApagar').value = data.id;
             }

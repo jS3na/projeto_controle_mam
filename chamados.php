@@ -111,10 +111,10 @@ $result = $stmt->get_result();
                             </label>
                             <label>
                                 <input type="checkbox" name="prioridade" id="chamadoPrioridade" value="1" />
-                                <span>Prioridade</span>
+                                <span class="txtModal">Prioridade</span>
                             </label>
                             <label>
-                                <span>Status</span>
+                                <span class="txtModal">Status</span>
                                 <select name="status" id="chamadoStatus">
                                     <option value="0">Aberto</option>
                                     <option value="1">Agendado</option>
@@ -127,7 +127,7 @@ $result = $stmt->get_result();
                             </label>
                             <label class="sumirNoEditar">
                                 <i class="bi bi-stopwatch"></i>
-                                <span>Data de previsão</span>
+                                <span class="txtModal">Data de previsão</span>
                                 <input name="data_previsao" type="datetime-local" placeholder="Data de previsão *" id="chamadoDataPrevisao" />
                             </label>
                     </div>

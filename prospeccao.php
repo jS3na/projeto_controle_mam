@@ -115,7 +115,7 @@ $result = $stmt->get_result();
                                 <input name="tipo" type="text" placeholder="Tipo *" id="prospeccaoTipo" />
                             </label>
                             <label>
-                                <span>Status</span>
+                                <span class="txtModal">Status</span>
                                 <select name="status" id="prospeccaoStatus">
                                     <option value="0">Novo</option>
                                     <option value="1">Em Análise</option>
