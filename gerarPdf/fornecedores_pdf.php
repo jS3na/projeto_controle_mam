@@ -1,50 +1,78 @@
 <?php
+use Dompdf\Dompdf;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
-    require('../fpdf186/fpdf.php');
+    require_once '../dompdf/vendor/autoload.php';
     include('../db/config.php');
 
     $conn->set_charset('utf8mb4');
 
     $data_hoje = date('Y-m-d');
 
-    $sql = "SELECT nome, endereco, email, cnpj,telefone_comercial,telefone_financeiro,telefone_suporte, descricao FROM fornecedores WHERE apagado = 0";
+    $sql = "SELECT nome, endereco, email, cnpj, telefone_comercial, telefone_financeiro, telefone_suporte, descricao FROM fornecedores WHERE apagado = 0";
 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
 
-        $pdf = new FPDF('L', 'mm', 'A4');
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 12);
+        $html = '
+        <html>
+        <head>
+            <style>
+                body { font-family: DejaVu Sans, sans-serif; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                td { font-size: 11px }
+            </style>
+        </head>
+        <body>
+            <h2>Relatório dos Fornecedores</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Endereço</th>
+                        <th>E-mail</th>
+                        <th>CNPJ</th>
+                        <th>Telefone Comercial</th>
+                        <th>Telefone Financeiro</th>
+                        <th>Telefone Suporte</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>';
 
-        $pdf->Cell(50, 10, mb_convert_encoding('Endereço', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Cell(35, 10, 'E-mail', 1, 0, 'C');
-        $pdf->Cell(25, 10, 'CNPJ', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Contato comercial', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Contato financeiro', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Contato suporte', 1, 0, 'C');
-        $pdf->Cell(50, 10, mb_convert_encoding('Descrição', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Ln();
-
-        $pdf->SetFont('Arial', '', 7);
         while ($row = $result->fetch_assoc()) {
-            $pdf->Cell(50, 25, mb_convert_encoding($row['endereco'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(35, 25, mb_convert_encoding($row['email'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(25, 25, mb_convert_encoding($row['cnpj'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_comercial'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_financeiro'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['telefone_suporte'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(50, 25, mb_convert_encoding($row['descricao'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
 
-            $pdf->Ln();
+            $html .= '<tr>
+                        <td>'.htmlspecialchars($row['nome']).'</td>
+                        <td>'.htmlspecialchars($row['endereco']).'</td>
+                        <td>'.htmlspecialchars($row['email']).'</td>
+                        <td>'.htmlspecialchars($row['cnpj']).'</td>
+                        <td>'.htmlspecialchars($row['telefone_comercial']).'</td>
+                        <td>'.htmlspecialchars($row['telefone_financeiro']).'</td>
+                        <td>'.htmlspecialchars($row['telefone_suporte']).'</td>
+                        <td>'.htmlspecialchars($row['descricao']).'</td>
+                    </tr>';
         }
 
-        $pdf->Output('D', 'fornecedores_relatorio_' . $data_hoje . '.pdf');
+        $html .= '
+                </tbody>
+            </table>
+        </body>
+        </html>';
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('fornecedores_relatorio_' . $data_hoje . '.pdf', ['Attachment' => 1]);
     } else {
         echo "0 resultados";
     }
 
     $conn->close();
 }
+?>

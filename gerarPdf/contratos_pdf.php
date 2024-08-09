@@ -1,8 +1,9 @@
 <?php
+use Dompdf\Dompdf;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
-    require('../fpdf186/fpdf.php');
+    require_once '../dompdf/vendor/autoload.php';
     include('../db/config.php');
 
     $conn->set_charset('utf8mb4');
@@ -20,38 +21,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
     if ($result->num_rows > 0) {
 
-        $pdf = new FPDF('L', 'mm', 'A4');
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 11);
+        $html = '
+        <html>
+        <head>
+            <style>
+                body { font-family: DejaVu Sans, sans-serif; }
+                table { border-collapse: collapse; width: 80%; }
+                th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                td { font-size: 11px }
+            </style>
+        </head>
+        <body>
+            <h2>Relatório dos Contratos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Financeiro</th>
+                        <th>Cliente</th>
+                        <th>Fornecedor</th>
+                        <th>E-mail</th>
+                        <th>E-mail Local</th>
+                        <th>Número Local</th>
+                        <th>Plano</th>
+                        <th>SLA</th>
+                    </tr>
+                </thead>
+                <tbody>';
 
-        $pdf->Cell(35, 10, 'Financeiro', 1, 0, 'C');
-        $pdf->Cell(35, 10, 'Cliente', 1, 0, 'C');
-        $pdf->Cell(25, 10, 'Fornecedor', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Email', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Email Local', 1, 0, 'C');
-        $pdf->Cell(40, 10, mb_convert_encoding('Número Local', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Cell(25, 10, 'Plano', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'SLA', 1, 0, 'C');
-        $pdf->Ln();
-
-        $pdf->SetFont('Arial', '', 7);
         while ($row = $result->fetch_assoc()) {
-            $pdf->Cell(35, 25, mb_convert_encoding($row['nome_financeiro'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(35, 25, mb_convert_encoding($row['nome_cliente'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(25, 25, mb_convert_encoding($row['nome_fornecedor'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['email'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['email_local'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['numero_local'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(25, 25, mb_convert_encoding($row['plano'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 25, mb_convert_encoding($row['sla'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
 
-            $pdf->Ln();
+            $html .= '<tr>
+                        <td>'.htmlspecialchars($row['nome_financeiro']).'</td>
+                        <td>'.htmlspecialchars($row['nome_cliente']).'</td>
+                        <td>'.htmlspecialchars($row['nome_fornecedor']).'</td>
+                        <td>'.htmlspecialchars($row['email']).'</td>
+                        <td>'.htmlspecialchars($row['email_local']).'</td>
+                        <td>'.htmlspecialchars($row['numero_local']).'</td>
+                        <td>'.htmlspecialchars($row['plano']).'</td>
+                        <td>'.htmlspecialchars($row['sla']).'</td>
+                    </tr>';
         }
 
-        $pdf->Output('D', 'contratos_relatorio_' . $data_hoje . '.pdf');
+        $html .= '
+                </tbody>
+            </table>
+        </body>
+        </html>';
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('contratos_relatorio_' . $data_hoje . '.pdf', ['Attachment' => 1]);
     } else {
         echo "0 resultados";
     }
 
     $conn->close();
 }
+?>

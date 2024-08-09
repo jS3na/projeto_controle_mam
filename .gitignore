@@ -1,3 +1,4 @@
 db/
 testes.php
 PHPMailer/
+dompdf/

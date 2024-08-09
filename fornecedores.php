@@ -39,6 +39,7 @@ if ($cidade) {
     $params[] = "%" . $cidade . "%";
 }
 if ($params) {
+    
     $stmtCount->bind_param(str_repeat("s", count($params)), ...$params);
 }
 $stmtCount->execute();

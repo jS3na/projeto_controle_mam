@@ -1,8 +1,9 @@
 <?php
+use Dompdf\Dompdf;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
-    require('../fpdf186/fpdf.php');
+    require_once '../dompdf/vendor/autoload.php';
     include('../db/config.php');
 
     $conn->set_charset('utf8mb4');
@@ -18,36 +19,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['gerarRelatorio'])) {
 
     if ($result->num_rows > 0) {
 
-        $pdf = new FPDF('L', 'mm', 'A4');
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 12);
+        $html = '
+        <html>
+        <head>
+            <style>
+                body { font-family: DejaVu Sans, sans-serif; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+            </style>
+        </head>
+        <body>
+            <h2>Relatório de Chamados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do cliente</th>
+                        <th>Início</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Tipo</th>
+                        <th>Previsão de término</th>
+                        <th>Término</th>
+                    </tr>
+                </thead>
+                <tbody>';
 
-        $pdf->Cell(40, 10, mb_convert_encoding('Início', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Cell(60, 10, 'Cliente', 1, 0, 'C');
-        $pdf->Cell(20, 10, 'Status', 1, 0, 'C');
-        $pdf->Cell(25, 10, 'Prioridade', 1, 0, 'C');
-        $pdf->Cell(60, 10, 'Tipo', 1, 0, 'C');
-        $pdf->Cell(40, 10, mb_convert_encoding('Previsão', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Cell(40, 10, mb_convert_encoding('Término', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-        $pdf->Ln();
-
-        $pdf->SetFont('Arial', '', 9);
         while ($row = $result->fetch_assoc()) {
-            $pdf->Cell(40, 10, mb_convert_encoding($row['data_inicio'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(60, 10, mb_convert_encoding($row['nome_cliente'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(20, 10, mb_convert_encoding($row['status'] == '1' ? 'Aberto' : 'Fechado', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(25, 10, mb_convert_encoding($row['prioridade'] == '1' ? 'Prioridade' : 'Não Prioridade', 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(60, 10, mb_convert_encoding($row['tipo'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 10, mb_convert_encoding($row['data_previsao'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
-            $pdf->Cell(40, 10, mb_convert_encoding($row['data_final'], 'ISO-8859-1', 'UTF-8'), 1, 0, 'C');
 
-            $pdf->Ln();
+            $statusText = '';
+
+            switch ($row['status']) {
+                case '0':
+                    $statusText = 'Aberto';
+                    break;
+                case '1':
+                    $statusText = 'Agendado';
+                    break;
+                case '2':
+                    $statusText = 'Fechado';
+                    break;
+                default:
+                    $statusText = 'Desconhecido';
+                    break;
+            }
+
+            $html .= '<tr>
+                        <td>'.htmlspecialchars($row['nome_cliente']).'</td>
+                        <td>'.htmlspecialchars($row['data_inicio']).'</td>
+                        <td>'.htmlspecialchars($statusText).'</td>
+                        <td>'.htmlspecialchars($row['prioridade'] == 1 ? 'Sim' : 'Não').'</td>
+                        <td>'.htmlspecialchars($row['tipo']).'</td>
+                        <td>'.htmlspecialchars($row['data_previsao']).'</td>
+                        <td>'.htmlspecialchars($row['data_final']).'</td>
+                    </tr>';
         }
 
-        $pdf->Output('D', 'chamados_relatorio_' . $data_hoje . '.pdf');
+        $html .= '
+                </tbody>
+            </table>
+        </body>
+        </html>';
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('chamados_relatorio_' . $data_hoje . '.pdf', ['Attachment' => 1]);
     } else {
         echo "0 resultados";
     }
 
     $conn->close();
 }
+?>
